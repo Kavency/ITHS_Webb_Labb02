@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices.Marshalling;
+using KayakCove.Core.Entities;
 
 namespace KayakCove.Core.Interfaces;
 
