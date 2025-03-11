@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KayakCove.Infrastructure.Repositories;
 
-class ProductRepository : IProductRepository
+public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _context;
 
