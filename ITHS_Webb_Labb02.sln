@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.Domain", "KayakCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.Infrastructure", "KayakCove.Infrastructure\KayakCove.Infrastructure.csproj", "{0EA67CE8-DD72-47E2-9F32-646B911D14B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.Application", "KayakCove.Application\KayakCove.Application.csproj", "{98B2DC16-8222-4853-B845-853A9A6BD4DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0EA67CE8-DD72-47E2-9F32-646B911D14B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EA67CE8-DD72-47E2-9F32-646B911D14B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EA67CE8-DD72-47E2-9F32-646B911D14B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98B2DC16-8222-4853-B845-853A9A6BD4DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98B2DC16-8222-4853-B845-853A9A6BD4DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98B2DC16-8222-4853-B845-853A9A6BD4DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98B2DC16-8222-4853-B845-853A9A6BD4DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
