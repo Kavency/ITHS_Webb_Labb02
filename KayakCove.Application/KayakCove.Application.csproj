@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KayakCove.Infrastructure\KayakCove.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
