@@ -23,7 +23,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetProduct(int id)
+    public async Task<IActionResult> GetProductById(int id)
     {
         var product = await _productService.GetProductByIdAsync(id);
         return product == null ? NotFound() : Ok(product);
@@ -33,7 +33,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> CreateProduct([FromBody] Product product)
     {
         await _productService.AddProductAsync(product);
-        return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+        return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
     }
 
     [HttpPut("{id}")]
