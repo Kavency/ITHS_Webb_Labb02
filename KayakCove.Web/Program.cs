@@ -1,13 +1,27 @@
 using KayakCove.Web.Components;
 using KayakCove.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using KayakCove.Infrastructure.Interfaces;
+using KayakCove.Infrastructure.Repositories;
+using KayakCove.Application.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection")));
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ProductService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
 
 var app = builder.Build();
 
@@ -21,7 +35,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.MapControllers();
+
 app.UseStaticFiles();
+app.UseCors("AllowAll");
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
