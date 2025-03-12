@@ -9,10 +9,12 @@ namespace KayakCove.Web.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly ProductService _productService;
+    private readonly CategoryService _categoryService;
 
-    public ProductsController(ProductService productService)
+    public ProductsController(ProductService productService, CategoryService categoryService)
     {
         this._productService = productService;
+        this._categoryService = categoryService;
     }
 
     [HttpGet]
@@ -32,6 +34,12 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] Product product)
     {
+        var category = await _categoryService.GetCategoryByIdAsync(product.CategoryId);
+        if (category is null)
+        {
+            return BadRequest($"Category with Id {product.CategoryId} does not exist.");
+        }
+
         await _productService.AddProductAsync(product);
         return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
     }
