@@ -1,0 +1,60 @@
+﻿@page "/AddProduct"
+@using KayakCove.Application.Services
+@using KayakCove.Application.DTOs
+@using KayakCove.Domain.Entities
+@inject ProductService ProductService
+@rendermode InteractiveServer
+
+<div class="col-12 offset-md-2 col-md-8 border">
+    <div class="text-center pr-t">
+        <h2 class="text-success">Add Product</h2>
+        <hr />
+        <div class="mx-2 px-2">
+            <EditForm FormName="AddProduct" Model="Product">
+                <DataAnnotationsValidator />
+
+                <div class="form-group py-2">
+                    Product Name
+                    <InputText class="form-control" @bind-Value="@Product.Name" />
+                    <ValidationMessage For="@(() => Product.Name)" />
+                </div>
+                <div class="form-group py-2">
+                    Product Description
+                    <InputTextArea class="form-control" @bind-Value="@Product.Description" />
+                </div>
+                <div class="form-group py-2">
+                    Product Price
+                    <InputNumber class="form-control" @bind-Value="@Product.Price" />
+                    <ValidationMessage For="@(() => Product.Price)" />
+                </div>
+                <div class="form-group py-2">
+                    Product Category Id
+                    <InputNumber class="form-control" @bind-Value="@Product.CategoryId" />
+                    <ValidationMessage For="@(() => Product.CategoryId)" />
+                </div>
+                <div class="form-group py-2">
+                    Product Image Uri
+                    <InputText class="form-control" @bind-Value="@Product.ImageUri" />
+                    <ValidationMessage For="@(() => Product.ImageUri)" />
+                </div>
+                <div>
+                    Product In Stock
+                    <InputCheckbox class="form-control" @bind-Value="@Product.IsInStock" />
+                </div>
+                <div class="form-group py-2">
+                    <button type="submit" class="btn btn-success m-3" @onvalidsubmit="HandleAddProductButton">Add product</button>
+                    <button type="reset" class="btn btn-danger m-3">Reset</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    public ProductDto Product { get; set; } = new ProductDto();
+
+    public async Task HandleAddProductButton()
+    {
+        //await ProductService.AddProductAsync(Product);
+    }
+}
