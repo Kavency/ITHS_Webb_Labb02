@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.Application", "KayakCove.Application\KayakCove.Application.csproj", "{98B2DC16-8222-4853-B845-853A9A6BD4DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.Web", "KayakCove.Web\KayakCove.Web.csproj", "{95D5CD65-DFF1-4A73-BC21-83B7B7C7B2BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.WebTemp", "KayakCove.Web\KayakCove.WebTemp.csproj", "{95D5CD65-DFF1-4A73-BC21-83B7B7C7B2BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
