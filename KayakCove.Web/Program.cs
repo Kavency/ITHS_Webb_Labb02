@@ -5,7 +5,6 @@ using KayakCove.Infrastructure.Interfaces;
 using KayakCove.Infrastructure.Repositories;
 using KayakCove.Application.Services;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,6 +12,7 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection")));
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ProductService>();
@@ -26,6 +26,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UsePathBase("/");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
