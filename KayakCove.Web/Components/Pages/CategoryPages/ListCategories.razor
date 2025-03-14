@@ -58,7 +58,7 @@ else
 }
 
 @code {
-    public bool IsLoading { get; set; } = true;
+    private bool IsLoading { get; set; } = true;
     public IEnumerable<Category> Categories { get; set; }
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -84,6 +84,5 @@ else
     private void NavigateToDeleteCategoryPage(int id)
     {
         Navigation.NavigateTo($"/category/delete/{id}");
-
     }
 }
