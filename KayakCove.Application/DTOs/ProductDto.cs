@@ -1,5 +1,6 @@
 ﻿using KayakCove.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
+
 namespace KayakCove.Application.DTOs;
 
 public class ProductDto
