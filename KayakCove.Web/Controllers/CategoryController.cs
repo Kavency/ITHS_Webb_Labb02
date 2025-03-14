@@ -32,7 +32,7 @@ namespace KayakCove.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] Category category)
         {
-            await _categoryService.AddCategoryAsync(category);
+            await _categoryService.CreateCategoryAsync(category);
             return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id}, category);
         }
 

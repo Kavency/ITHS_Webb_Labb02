@@ -26,7 +26,7 @@ else
         <div class="card-body p-4">
             <div class="row pb-3">
                 <div class="col-12 text-end">
-                    <button class="btn btn-lg btn-success" @onclick="NavigateToCreateProductPage">Add product</button>
+                    <button class="btn btn-lg btn-success" @onclick="NavigateToCreateProductPage"><i class="bi bi-plus-square"></i> Add product</button>
                 </div>
             </div>
             @if (Products.Any())
@@ -53,8 +53,8 @@ else
                                 <td>@item.Price</td>
                                 <td>@item.IsInStock</td>
                                 <td>
-                                    <button class="btn btn-primary m-1 py-1 px-2 " @onclick="() => NavigateToUpdateProductPage(item.Id)">U</button>
-                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => NavigateToDeleteProductPage(item.Id)">D</button>
+                                    <button class="btn btn-primary m-1 py-1 px-2 " @onclick="() => NavigateToUpdateProductPage(item.Id)"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => NavigateToDeleteProductPage(item.Id)"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         }

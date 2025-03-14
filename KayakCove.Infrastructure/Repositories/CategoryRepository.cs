@@ -24,7 +24,7 @@ public class CategoryRepository : ICategoryRepository
         return await _context.Categories.FindAsync(id);
     }
     
-    public async Task AddCategoryAsync(Category category)
+    public async Task CreateCategoryAsync(Category category)
     {
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();

@@ -24,7 +24,7 @@ else
         <div class="card-body p-4">
             <div class="row pb-3">
                 <div class="col-12 text-end">
-                    <button class="btn btn-lg btn-success" @onclick="NavigateToCreateCategoryPage">Add New Category</button>
+                    <button class="btn btn-lg btn-success" @onclick="NavigateToCreateCategoryPage"><i class="bi bi-plus-square"></i> Add New Category</button>
                 </div>
             </div>
             @if (Categories.Any())
@@ -45,8 +45,8 @@ else
                                 <td>@item.Id</td>
                                 <td>@item.Name</td>
                                 <td>
-                                    <button class="btn btn-primary m-1 py-1 px-2" @onclick="() => NavigateToUpdateCategoryPage(item.Id)">U</button>
-                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => NavigateToDeleteCategoryPage(item.Id)">D</button>
+                                    <button class="btn btn-primary m-1 py-1 px-2" @onclick="() => NavigateToUpdateCategoryPage(item.Id)"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => NavigateToDeleteCategoryPage(item.Id)"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         }
@@ -58,7 +58,7 @@ else
 }
 
 @code {
-    public bool IsLoading { get; set; } = true;
+    private bool IsLoading { get; set; } = true;
     public IEnumerable<Category> Categories { get; set; }
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -84,6 +84,5 @@ else
     private void NavigateToDeleteCategoryPage(int id)
     {
         Navigation.NavigateTo($"/category/delete/{id}");
-
     }
 }

@@ -14,7 +14,7 @@ public class CategoryService
 
     public Task<IEnumerable<Category>> GetAllCategoriesAsync() => _categoryRepository.GetAllCategoriesAsync();
     public Task<Category> GetCategoryByIdAsync(int id) => _categoryRepository.GetCategoryByIdAsync(id);
-    public Task AddCategoryAsync(Category category) => _categoryRepository.AddCategoryAsync(category);
+    public Task CreateCategoryAsync(Category category) => _categoryRepository.CreateCategoryAsync(category);
     public Task UpdateCategoryAsync(Category category) => _categoryRepository.UpdateCategoryAsync(category);
     public Task DeleteCategoryAsync(int id) => _categoryRepository.DeleteCategoryAsync(id);
 }
