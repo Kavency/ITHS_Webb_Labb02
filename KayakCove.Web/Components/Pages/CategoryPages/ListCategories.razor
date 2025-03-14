@@ -1,0 +1,89 @@
+﻿@page "/category"
+@rendermode InteractiveServer
+@using KayakCove.Application.Services
+@using KayakCove.Domain.Entities
+@inject NavigationManager Navigation
+@inject CategoryService categoryService 
+
+@if (IsLoading)
+{
+    <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="images/loading.gif" alt="Loading data" />
+    </div>
+}
+else
+{
+    <div class="card shadow border-0 mt-4">
+        <div class="card-header bg-black bg-gradient ml-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2">Categories</h2>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="row pb-3">
+                <div class="col-12 text-end">
+                    <button class="btn btn-lg btn-success" @onclick="NavigateToCreateCategoryPage">Add New Category</button>
+                </div>
+            </div>
+            @if (Categories.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Categories)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Name</td>
+                                <td>
+                                    <button class="btn btn-primary m-1 py-1 px-2" @onclick="() => NavigateToUpdateCategoryPage(item.Id)">U</button>
+                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => NavigateToDeleteCategoryPage(item.Id)">D</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    public bool IsLoading { get; set; } = true;
+    public IEnumerable<Category> Categories { get; set; }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Categories = await categoryService.GetAllCategoriesAsync();
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void NavigateToCreateCategoryPage()
+    {
+        Navigation.NavigateTo($"/category/create");
+    }
+
+    private void NavigateToUpdateCategoryPage(int id)
+    {
+        Navigation.NavigateTo($"/category/update/{id}");
+    }
+
+    private void NavigateToDeleteCategoryPage(int id)
+    {
+        Navigation.NavigateTo($"/category/delete/{id}");
+
+    }
+}
