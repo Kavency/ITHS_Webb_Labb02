@@ -40,9 +40,9 @@ else
                             </button>
                         </div>
                         <div class="col-6 col-md-3">
-                            <a href="category" class="btn btn-danger form-control" disabled="@IsLoading">
+                            <button @onclick="OnUpsertCategoryCancel" class="btn btn-danger form-control" disabled="@IsLoading">
                                 <i class="bi bi-arrow-left-square"></i> Back to list
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -61,11 +61,14 @@ else
     [SupplyParameterFromForm]
     public Category Category { get; set; } = new();
 
+    private string CategoryNameFallback { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         if (Id > 0)
         {
             Category = await _categoryService.GetCategoryByIdAsync(Id);
+            CategoryNameFallback = Category.Name;
         }
         IsLoading = false;
     }
@@ -87,6 +90,12 @@ else
 
         IsLoading = false;
 
+        _navigationManager.NavigateTo("category");
+    }
+
+    private void OnUpsertCategoryCancel()
+    {
+        Category.Name = CategoryNameFallback;
         _navigationManager.NavigateTo("category");
     }
 
