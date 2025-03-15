@@ -1,5 +1,5 @@
+using KayakCove.Application.DTOs;
 using KayakCove.Application.Services;
-using KayakCove.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KayakCove.Web.Controllers
@@ -18,29 +18,29 @@ namespace KayakCove.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCategories()
         {
-            var categories = await _categoryService.GetAllCategoriesAsync();
-            return Ok(categories);
+            var categoryDtos = await _categoryService.GetAllCategoriesAsync();
+            return Ok(categoryDtos);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(int id)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(id);
-            return category == null ? NotFound() : Ok(category);
+            var categoryDto = await _categoryService.GetCategoryByIdAsync(id);
+            return categoryDto == null ? NotFound() : Ok(categoryDto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] Category category)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryDto categoryDto)
         {
-            await _categoryService.CreateCategoryAsync(category);
-            return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id}, category);
+            await _categoryService.CreateCategoryAsync(categoryDto);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = categoryDto.Id}, categoryDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, [FromBody] Category category)
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryDto categoryDto)
         {
-            if (id != category.Id) return BadRequest();
-            await _categoryService.UpdateCategoryAsync(category);
+            if (id != categoryDto.Id) return BadRequest();
+            await _categoryService.UpdateCategoryAsync(categoryDto);
             return NoContent();
         }
 
