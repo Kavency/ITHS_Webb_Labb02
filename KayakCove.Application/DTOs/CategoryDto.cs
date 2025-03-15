@@ -2,7 +2,7 @@
 
 namespace KayakCove.Application.DTOs;
 
-class CategoryDto
+public class CategoryDto
 {
     public int Id { get; set; }
 
