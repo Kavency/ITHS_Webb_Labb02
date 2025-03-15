@@ -51,7 +51,7 @@ else
                                 <td>@item.Name</td>
                                 <td>@item.Description</td>
                                 <td>@item.Price</td>
-                                <td>@item.IsInStock</td>
+                                <td>@item.HasExpired</td>
                                 <td>
                                     <button class="btn btn-primary m-1 py-1 px-2 " @onclick="() => NavigateToUpdateProductPage(item.Id)"><i class="bi bi-pencil"></i></button>
                                     <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => NavigateToDeleteProductPage(item.Id)"><i class="bi bi-trash"></i></button>
