@@ -46,7 +46,11 @@ public class CategoryService
         await _categoryRepository.UpdateCategoryAsync(entity);
     }
 
-    public Task DeleteCategoryAsync(int id) => _categoryRepository.DeleteCategoryAsync(id);
+    public async Task<bool> DeleteCategoryAsync(int id)
+    {
+        var result = await _categoryRepository.DeleteCategoryAsync(id);
+        return result;
+    }
 
     private Category ConvertDtoToEntity(CategoryDto Dto)
     {
