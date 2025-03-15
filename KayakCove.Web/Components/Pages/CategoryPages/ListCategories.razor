@@ -9,7 +9,7 @@
 @inject IHttpClientFactory _httpClientFactory
 @inject IJSRuntime _js
 
-<KayakCove.Web.Components.Shared.ConfirmModal></KayakCove.Web.Components.Shared.ConfirmModal>
+<KayakCove.Web.Components.Shared.ConfirmModal OnConfirmClicked="OnDeleteConfirmClicked"></KayakCove.Web.Components.Shared.ConfirmModal>
 
 @if (IsLoading)
 {
@@ -30,7 +30,7 @@ else
         <div class="card-body p-4">
             <div class="row pb-3">
                 <div class="col-12 text-end">
-                    <button class="btn btn-lg btn-success" @onclick="NavigateToCreateCategoryPage"><i class="bi bi-plus-square"></i> Add New Category</button>
+                    <button class="btn btn-lg btn-success" @onclick="NavigateToCreateCategoryPage"><i class="bi bi-plus-square"></i> Add Category</button>
                 </div>
             </div>
             @if (Categories.Any())
@@ -91,17 +91,24 @@ else
 
     private void OnDeleteClicked(int id)
     {
+        DeleteCategoryId = id;
         _js.InvokeVoidAsync("showConfirmModal");
     }
 
     private async Task OnDeleteConfirmClicked(bool isConfirmed)
     {
         IsLoading = true;
-
+        await _js.InvokeVoidAsync("hideConfirmModal");
         if (isConfirmed && DeleteCategoryId != 0)
         {
-            await _categoryService.DeleteCategoryAsync(DeleteCategoryId);
-            _js?.ToastrSuccess("Category deleted");
+            var apiClient = _httpClientFactory.CreateClient("ApiClient");
+            var isDeleted = await _categoryService.DeleteCategoryAsync(DeleteCategoryId);
+            if (isDeleted)
+                _js?.ToastrSuccess("Category deleted");
+            else
+                _js?.ToastrError("Something went wrong.");
+
+            Categories = await apiClient.GetFromJsonAsync<IEnumerable<CategoryDto>>("/api/category");
         }
         DeleteCategoryId = 0;
         IsLoading = false;
