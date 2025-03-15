@@ -1,3 +1,4 @@
+using KayakCove.Application.DTOs;
 using KayakCove.Domain.Entities;
 using KayakCove.Infrastructure.Interfaces;
 
@@ -12,9 +13,49 @@ public class CategoryService
         this._categoryRepository = categoryRepository;
     }
 
-    public Task<IEnumerable<Category>> GetAllCategoriesAsync() => _categoryRepository.GetAllCategoriesAsync();
-    public Task<Category> GetCategoryByIdAsync(int id) => _categoryRepository.GetCategoryByIdAsync(id);
-    public Task CreateCategoryAsync(Category category) => _categoryRepository.CreateCategoryAsync(category);
-    public Task UpdateCategoryAsync(Category category) => _categoryRepository.UpdateCategoryAsync(category);
+    public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
+    {
+        var categories = await _categoryRepository.GetAllCategoriesAsync();
+        
+        var categoryDtos = categories.Select(category => new CategoryDto
+        {
+            Id = category.Id,
+            Name = category.Name
+        });
+
+        return categoryDtos;
+    }
+    public async Task<CategoryDto> GetCategoryByIdAsync(int id)
+    {
+        var entity = await _categoryRepository.GetCategoryByIdAsync(id);
+        var categoryDto = ConvertEntityToDto(entity);
+        return categoryDto;
+    }
+    public async Task CreateCategoryAsync(CategoryDto categoryDto)
+    {
+        var entity = ConvertDtoToEntity(categoryDto);
+        await _categoryRepository.CreateCategoryAsync(entity);
+    }
+
+    public async Task UpdateCategoryAsync(CategoryDto categoryDto)
+    {
+        var entity = await _categoryRepository.GetCategoryByIdAsync(categoryDto.Id);
+
+        entity.Name = categoryDto.Name;
+
+        await _categoryRepository.UpdateCategoryAsync(entity);
+    }
+
     public Task DeleteCategoryAsync(int id) => _categoryRepository.DeleteCategoryAsync(id);
+
+    private Category ConvertDtoToEntity(CategoryDto Dto)
+    {
+        return new Category { Id = Dto.Id, Name = Dto.Name };
+    }
+
+    private CategoryDto ConvertEntityToDto(Category Entity)
+    {
+        return new CategoryDto { Id = Entity.Id, Name = Entity.Name };
+    }
+
 }
