@@ -102,11 +102,12 @@ else
         if (isConfirmed && DeleteCategoryId != 0)
         {
             var apiClient = _httpClientFactory.CreateClient("ApiClient");
-            var isDeleted = await _categoryService.DeleteCategoryAsync(DeleteCategoryId);
-            if (isDeleted)
-                _js?.ToastrSuccess("Category deleted");
-            else
-                _js?.ToastrError("Something went wrong.");
+            await apiClient.DeleteAsync($"api/{DeleteCategoryId}");
+            // var isDeleted = await apiClient.DeleteAsync($"api/{DeleteCategoryId}");
+            // if (isDeleted)
+            //     _js?.ToastrSuccess("Category deleted");
+            // else
+            //     _js?.ToastrError("Something went wrong.");
 
             Categories = await apiClient.GetFromJsonAsync<IEnumerable<CategoryDto>>("/api/category");
         }

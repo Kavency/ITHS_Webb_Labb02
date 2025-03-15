@@ -24,22 +24,33 @@ public class ProductRepository : IProductRepository
         return await _context.Products.FindAsync(id);
     }
     
-    public async Task AddProductAsync(Product product)
+    public async Task<bool> CreateProductAsync(Product product)
     {
         _context.Products.Add(product);
-        await _context.SaveChangesAsync();
+        var result = await _context.SaveChangesAsync();
+        if (result > 0)
+            return true;
+        else
+            return false;
     }
 
-    public async Task UpdateProductAsync(Product product)
+    public async Task<bool> UpdateProductAsync(Product product)
     {
         _context.Products.Update(product);
-        await _context.SaveChangesAsync();
+        var result = await _context.SaveChangesAsync();
+        if (result > 0) 
+            return true;
+        else 
+            return false;
     }
  
-    public async Task DeleteProductAsync(int id)
+    public async Task<bool> DeleteProductAsync(int id)
     {
         var product = await _context.Products.FindAsync(id);
+        if (product is null) return false;
+
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
+        return true;
     }
 }

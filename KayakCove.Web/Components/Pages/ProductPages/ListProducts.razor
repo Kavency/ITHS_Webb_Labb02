@@ -1,6 +1,6 @@
 ﻿@page "/products"
+@using KayakCove.Application.DTOs
 @using KayakCove.Application.Services
-@using KayakCove.Domain.Entities
 @inject ProductService ProductService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
@@ -67,7 +67,7 @@ else
 
 @code {
     public bool IsLoading { get; set; } = true;
-    public IEnumerable<Product> Products;
+    public IEnumerable<ProductDto> Products;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
