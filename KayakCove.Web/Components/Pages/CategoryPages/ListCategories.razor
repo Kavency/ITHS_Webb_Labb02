@@ -1,9 +1,15 @@
 ﻿@page "/category"
 @rendermode InteractiveServer
 @using KayakCove.Application.Services
+@using KayakCove.Application.DTOs
 @using KayakCove.Domain.Entities
-@inject NavigationManager Navigation
-@inject CategoryService categoryService 
+@using KayakCove.Web.Controllers
+@inject NavigationManager _navigation
+@inject CategoryService _categoryService
+@inject IHttpClientFactory _httpClientFactory
+@inject IJSRuntime _js
+
+<KayakCove.Web.Components.Shared.ConfirmModal></KayakCove.Web.Components.Shared.ConfirmModal>
 
 @if (IsLoading)
 {
@@ -46,7 +52,7 @@ else
                                 <td>@item.Name</td>
                                 <td>
                                     <button class="btn btn-primary m-1 py-1 px-2" @onclick="() => NavigateToUpdateCategoryPage(item.Id)"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => NavigateToDeleteCategoryPage(item.Id)"><i class="bi bi-trash"></i></button>
+                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => OnDeleteClicked(item.Id)"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         }
@@ -59,13 +65,15 @@ else
 
 @code {
     private bool IsLoading { get; set; } = true;
-    public IEnumerable<Category> Categories { get; set; }
+    public IEnumerable<CategoryDto>? Categories { get; set; }
+    private int DeleteCategoryId { get; set; } = 0;
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Categories = await categoryService.GetAllCategoriesAsync();
+            var apiClient = _httpClientFactory.CreateClient("ApiClient");
+            Categories = await apiClient.GetFromJsonAsync<IEnumerable<CategoryDto>>("/api/category");
             IsLoading = false;
             StateHasChanged();
         }
@@ -73,16 +81,29 @@ else
 
     private void NavigateToCreateCategoryPage()
     {
-        Navigation.NavigateTo($"/category/create");
+        _navigation.NavigateTo($"/category/create");
     }
 
     private void NavigateToUpdateCategoryPage(int id)
     {
-        Navigation.NavigateTo($"/category/update/{id}");
+        _navigation.NavigateTo($"/category/update/{id}");
     }
 
-    private void NavigateToDeleteCategoryPage(int id)
+    private void OnDeleteClicked(int id)
     {
-        Navigation.NavigateTo($"/category/delete/{id}");
+        _js.InvokeVoidAsync("showConfirmModal");
+    }
+
+    private async Task OnDeleteConfirmClicked(bool isConfirmed)
+    {
+        IsLoading = true;
+
+        if (isConfirmed && DeleteCategoryId != 0)
+        {
+            await _categoryService.DeleteCategoryAsync(DeleteCategoryId);
+            _js?.ToastrSuccess("Category deleted");
+        }
+        DeleteCategoryId = 0;
+        IsLoading = false;
     }
 }

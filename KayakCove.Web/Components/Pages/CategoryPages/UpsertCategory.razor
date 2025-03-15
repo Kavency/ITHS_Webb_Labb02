@@ -2,6 +2,7 @@
 @page "/category/update/{id:int}"
 
 @rendermode InteractiveServer
+@using KayakCove.Application.DTOs
 @using KayakCove.Application.Services
 @using KayakCove.Domain.Entities
 @inject CategoryService _categoryService
@@ -25,13 +26,13 @@ else
             </div>
         </div>
         <div class="card-body p-4">
-            <EditForm Model="Category" FormName="UpsertCategoryForm" OnValidSubmit="OnUpsertCategorySubmit">
+            <EditForm Model="CategoryDto" FormName="UpsertCategoryForm" OnValidSubmit="OnUpsertCategorySubmit">
                 <DataAnnotationsValidator />
                 <div class="border p-3 mt-4">
                     <div class="form-floating py-3 col-12">
-                        <InputText @bind-Value="Category.Name" class="form-control" id="Name" placeholder="Name" />
+                        <InputText @bind-Value="CategoryDto.Name" class="form-control" id="Name" placeholder="Name" />
                         <label for="Name">Name</label>
-                        <ValidationMessage For="@(() => Category.Name)" />
+                        <ValidationMessage For="@(() => CategoryDto.Name)" />
                     </div>
                     <div class="row mt-3">
                         <div class="col-6 col-md-3">
@@ -59,13 +60,13 @@ else
     public int Id { get; set; }
 
     [SupplyParameterFromForm]
-    public Category Category { get; set; } = new();
+    public CategoryDto CategoryDto { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         if (Id > 0)
         {
-            Category = await _categoryService.GetCategoryByIdAsync(Id);
+            CategoryDto = await _categoryService.GetCategoryByIdAsync(Id);
         }
         IsLoading = false;
     }
@@ -76,12 +77,12 @@ else
 
         if (Id == 0)
         {
-            await _categoryService.CreateCategoryAsync(Category);
+            await _categoryService.CreateCategoryAsync(CategoryDto);
             await _js.ToastrSuccess("Category created!");
         }
         else
         {
-            await _categoryService.UpdateCategoryAsync(Category);
+            await _categoryService.UpdateCategoryAsync(CategoryDto);
             await _js.ToastrSuccess("Category updated!");
         }
 
