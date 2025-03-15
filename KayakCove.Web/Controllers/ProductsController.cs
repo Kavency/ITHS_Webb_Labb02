@@ -1,4 +1,5 @@
-﻿using KayakCove.Application.Services;
+﻿using KayakCove.Application.DTOs;
+using KayakCove.Application.Services;
 using KayakCove.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,35 +21,35 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllProducts()
     {
-        var products = await _productService.GetAllProductsAsync();
-        return Ok(products);
+        var productDtos = await _productService.GetAllProductsAsync();
+        return Ok(productDtos);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(int id)
     {
-        var product = await _productService.GetProductByIdAsync(id);
-        return product == null ? NotFound() : Ok(product);
+        var productDto = await _productService.GetProductByIdAsync(id);
+        return productDto == null ? NotFound() : Ok(productDto);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] Product product)
+    public async Task<IActionResult> CreateProduct([FromBody] ProductDto productDto)
     {
-        var category = await _categoryService.GetCategoryByIdAsync(product.CategoryId);
+        var category = await _categoryService.GetCategoryByIdAsync(productDto.CategoryId);
         if (category is null)
         {
-            return BadRequest($"Category with Id {product.CategoryId} does not exist.");
+            return BadRequest($"Category with Id {productDto.CategoryId} does not exist.");
         }
 
-        await _productService.AddProductAsync(product);
-        return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+        await _productService.CreateProductAsync(productDto);
+        return CreatedAtAction(nameof(GetProductById), new { id = productDto.Id }, productDto);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
+    public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto productDto)
     {
-        if (id != product.Id) return BadRequest();
-        await _productService.UpdateProductAsync(product);
+        if (id != productDto.Id) return BadRequest();
+        await _productService.UpdateProductAsync(productDto);
         return NoContent();
     }
 

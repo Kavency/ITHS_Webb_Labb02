@@ -15,32 +15,36 @@
                 <DataAnnotationsValidator />
 
                 <div class="form-group py-2">
-                    Product Name
+                    Name
                     <InputText class="form-control" @bind-Value="@Product.Name" />
                     <ValidationMessage For="@(() => Product.Name)" />
                 </div>
                 <div class="form-group py-2">
-                    Product Description
+                    Description
                     <InputTextArea class="form-control" @bind-Value="@Product.Description" />
                 </div>
                 <div class="form-group py-2">
-                    Product Price
+                    Price
                     <InputNumber class="form-control" @bind-Value="@Product.Price" />
                     <ValidationMessage For="@(() => Product.Price)" />
                 </div>
                 <div class="form-group py-2">
-                    Product Category Id
+                    Category Id
                     <InputNumber class="form-control" @bind-Value="@Product.CategoryId" />
                     <ValidationMessage For="@(() => Product.CategoryId)" />
                 </div>
                 <div class="form-group py-2">
-                    Product Image Uri
+                    Image Uri
                     <InputText class="form-control" @bind-Value="@Product.ImageUri" />
                     <ValidationMessage For="@(() => Product.ImageUri)" />
                 </div>
                 <div>
-                    Product In Stock
-                    <InputCheckbox class="form-control" @bind-Value="@Product.IsInStock" />
+                    Quantity
+                    <InputNumber class="form-control" @bind-Value="@Product.Quantity" />
+                </div>
+                <div>
+                    Expired
+                    <InputCheckbox class="form-control" @bind-Value="@Product.HasExpired" />
                 </div>
                 <div class="form-group py-2">
                     <button type="submit" class="btn btn-success m-3" @onvalidsubmit="HandleAddProductButton">Add product</button>
