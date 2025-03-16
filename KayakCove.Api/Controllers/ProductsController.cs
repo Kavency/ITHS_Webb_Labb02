@@ -1,6 +1,5 @@
 ﻿using KayakCove.Application.DTOs;
 using KayakCove.Application.Services;
-using KayakCove.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KayakCove.Web.Controllers;
