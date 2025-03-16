@@ -15,8 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KayakCove.Application\KayakCove.Application.csproj" />
-    <ProjectReference Include="..\KayakCove.Infrastructure\KayakCove.Infrastructure.csproj" />
+    <ProjectReference Include="..\KayakCove.Api\KayakCove.Api.csproj" />
   </ItemGroup>
 
 </Project>
