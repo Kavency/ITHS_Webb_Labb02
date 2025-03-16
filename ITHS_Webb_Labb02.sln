@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.Application", "Ka
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.Web", "KayakCove.Web\KayakCove.Web.csproj", "{7606DD94-1CD7-46CF-A519-A8ECDE458A59}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakCove.Api", "KayakCove.Api\KayakCove.Api.csproj", "{86844FEE-0204-4F3C-B862-3D8233A819F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{7606DD94-1CD7-46CF-A519-A8ECDE458A59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7606DD94-1CD7-46CF-A519-A8ECDE458A59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7606DD94-1CD7-46CF-A519-A8ECDE458A59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86844FEE-0204-4F3C-B862-3D8233A819F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86844FEE-0204-4F3C-B862-3D8233A819F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86844FEE-0204-4F3C-B862-3D8233A819F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86844FEE-0204-4F3C-B862-3D8233A819F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
