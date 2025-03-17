@@ -1,11 +1,11 @@
 ﻿@page "/category/create"
 @page "/category/update/{id:int}"
-
 @rendermode InteractiveServer
 @using KayakCove.Application.DTOs
 @using KayakCove.Application.Services
 @using KayakCove.Domain.Entities
-@inject CategoryService _categoryService
+@using KayakCove.Web.ApiServices
+@inject CategoryApiService _categoryApiService
 @inject NavigationManager _navigationManager
 @inject IJSRuntime _js
 
@@ -68,7 +68,7 @@ else
     {
         if (Id > 0)
         {
-            CategoryDto = await _categoryService.GetCategoryByIdAsync(Id);
+            CategoryDto = await _categoryApiService.GetCategoryByIdAsync(Id);
             CategoryNameFallback = CategoryDto.Name;
         }
         IsLoading = false;
@@ -80,14 +80,14 @@ else
 
         if (Id == 0)
         {
-            await _categoryService.CreateCategoryAsync(CategoryDto);
+            await _categoryApiService.CreateCategoryAsync(CategoryDto);
             await _js.ToastrSuccess("Category created!");
         }
-        else
-        {
-            await _categoryService.UpdateCategoryAsync(CategoryDto);
-            await _js.ToastrSuccess("Category updated!");
-        }
+        // else
+        // {
+        //     await _categoryService.UpdateCategoryAsync(CategoryDto);
+        //     await _js.ToastrSuccess("Category updated!");
+        // }
 
         IsLoading = false;
 
