@@ -31,9 +31,6 @@ public class ProductApiService
     public async Task<ProductDto> CreateProductAsync(ProductDto dto)
     {
         var jsonContent = SerializeFromObject(dto);
-        Console.WriteLine("------------------------------");
-        Console.WriteLine(jsonContent.Headers); 
-        Console.WriteLine("------------------------------");
         var response = await _httpClient.PostAsync("products", jsonContent);
         response.EnsureSuccessStatusCode();
         var jsonResponse = await response.Content.ReadAsStringAsync();
