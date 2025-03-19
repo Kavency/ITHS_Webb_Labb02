@@ -83,11 +83,15 @@ else
             await _categoryApiService.CreateCategoryAsync(CategoryDto);
             await _js.ToastrSuccess("Category created!");
         }
-        // else
-        // {
-        //     await _categoryService.UpdateCategoryAsync(CategoryDto);
-        //     await _js.ToastrSuccess("Category updated!");
-        // }
+        else
+        {
+            var result = await _categoryApiService.UpdateCategoryAsync(CategoryDto);
+
+            if (result)
+                _js.ToastrSuccess("Category updated!");
+            else
+                _js.ToastrError("Something went wrong!");
+        }
 
         IsLoading = false;
 
