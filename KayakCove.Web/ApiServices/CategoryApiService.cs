@@ -1,5 +1,4 @@
 ﻿using KayakCove.Application.DTOs;
-using KayakCove.Domain.Entities;
 using System.Text;
 using System.Text.Json;
 
@@ -12,42 +11,63 @@ namespace KayakCove.Web.ApiServices
         public CategoryApiService(IHttpClientFactory httpClient)
         {
             this._httpClient = httpClient.CreateClient("apiClient");
-            _httpClient.BaseAddress = new Uri("https://localhost:7247/");
+            _httpClient.BaseAddress = new Uri("https://localhost:7247/api/");
         }
 
         public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
-            return await _httpClient.GetFromJsonAsync<List<CategoryDto>>("api/category");
+            return await _httpClient.GetFromJsonAsync<List<CategoryDto>>("category");
         }
 
         public async Task<CategoryDto> GetCategoryByIdAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"api/category/{id}");
-
+            var response = await _httpClient.GetAsync($"category/{id}");
             response.EnsureSuccessStatusCode();
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var categoryDto = JsonSerializer.Deserialize<CategoryDto>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var categoryDto = DeserializeToObject(jsonResponse);
             return categoryDto;
         }
 
+
+        public async Task<bool> UpdateCategoryAsync(CategoryDto dto)
+        {
+            var jsonContent = SerializeFromObject(dto);
+            var response = await _httpClient.PutAsync($"category/{dto.Id}", jsonContent);
+            if (response.IsSuccessStatusCode)
+                return true;
+            else
+                return false;
+        }
+
+
         public async Task<CategoryDto> CreateCategoryAsync(CategoryDto dto)
         {
-            var jsonContent = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("api/category", jsonContent);
+            var jsonContent = SerializeFromObject(dto);
+            var response = await _httpClient.PostAsync("category", jsonContent);
             response.EnsureSuccessStatusCode();
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var categoryDto = JsonSerializer.Deserialize<CategoryDto>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var categoryDto = DeserializeToObject(jsonResponse);
             return categoryDto;
         }
 
 
         public async Task<bool> DeleteCategoryAsync(int id)
         {
-            var result = await _httpClient.DeleteAsync($"api/category/{id}");
+            var result = await _httpClient.DeleteAsync($"category/{id}");
             if (result.IsSuccessStatusCode)
                 return true;
             else
                 return false;
+        }
+
+        private StringContent SerializeFromObject(CategoryDto dtoToSerialize)
+        {
+            return new StringContent(JsonSerializer.Serialize(dtoToSerialize), Encoding.UTF8, "application/json");
+        }
+
+        private CategoryDto DeserializeToObject(string httpResponse)
+        {
+            return JsonSerializer.Deserialize<CategoryDto>(httpResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
     }
 }
