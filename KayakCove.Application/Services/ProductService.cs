@@ -26,7 +26,8 @@ public class ProductService
             Price = p.Price,
             Quantity = p.Quantity,
             HasExpired = p.HasExpired,
-            CategoryId = p.CategoryId
+            CategoryId = p.CategoryId,
+            Category = p.Category
         });
 
         return productDtos;
@@ -39,11 +40,10 @@ public class ProductService
         return productDto;
     }
 
-    public async Task<bool> CreateProductAsync(ProductDto dto)
+    public async Task CreateProductAsync(ProductDto dto)
     {
         var product = ConvertDtoToEntity(dto);
-        var result = await _productRepository.CreateProductAsync(product);
-        return result;
+        await _productRepository.CreateProductAsync(product);
     }
     public async Task<bool> UpdateProductAsync(ProductDto dto)
     {
