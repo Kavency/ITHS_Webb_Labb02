@@ -37,12 +37,12 @@ else
                     <div class="row mt-3">
                         <div class="col-6 col-md-3">
                             <button type="submit" class="btn btn-success form-control" disabled="@IsLoading">
-                                <i class="bi bi-floppy"></i> Save
+                                <i class="bi bi-floppy"></i> @(Id > 0 ? "Update" : "Create")
                             </button>
                         </div>
                         <div class="col-6 col-md-3">
                             <button @onclick="OnUpsertCategoryCancel" class="btn btn-danger form-control" disabled="@IsLoading">
-                                <i class="bi bi-arrow-left-square"></i> Back to list
+                                <i class="bi bi-x-circle"></i> Cancel
                             </button>
                         </div>
                     </div>
