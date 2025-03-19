@@ -1,7 +1,7 @@
 ﻿@page "/products"
 @using KayakCove.Application.DTOs
-@using KayakCove.Application.Services
-@inject ProductService ProductService
+@using KayakCove.Web.ApiServices
+@inject ProductApiService _productApiService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
@@ -37,8 +37,9 @@ else
                             <th>ID</th>
                             <th>Name</th>
                             <th>Description</th>
+                            <th>Category</th>
                             <th>Price</th>
-                            <th>In Stock</th>
+                            <th>Has Expired</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -50,6 +51,7 @@ else
                                 <td>@item.Id</td>
                                 <td>@item.Name</td>
                                 <td>@item.Description</td>
+                                <td>@item.Category.Name</td>
                                 <td>@item.Price</td>
                                 <td>@item.HasExpired</td>
                                 <td>
@@ -73,7 +75,7 @@ else
     {
         if (firstRender)
         {
-            Products = await ProductService.GetAllProductsAsync();
+            Products = await _productApiService.GetAllProductsAsync();
             IsLoading = false;
             StateHasChanged();
         }
