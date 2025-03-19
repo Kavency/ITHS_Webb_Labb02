@@ -34,12 +34,6 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] ProductDto productDto)
     {
-        var category = await _categoryService.GetCategoryByIdAsync(productDto.CategoryId);
-        if (category is null)
-        {
-            return BadRequest($"Category with Id {productDto.CategoryId} does not exist.");
-        }
-
         await _productService.CreateProductAsync(productDto);
         return CreatedAtAction(nameof(GetProductById), new { id = productDto.Id }, productDto);
     }

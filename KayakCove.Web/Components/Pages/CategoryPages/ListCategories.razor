@@ -1,12 +1,11 @@
 ﻿@page "/category"
 @rendermode InteractiveServer
-@using KayakCove.Application.Services
 @using KayakCove.Application.DTOs
+@using KayakCove.Application.Services
 @using KayakCove.Domain.Entities
-@using KayakCove.Web.Controllers
+@using KayakCove.Web.ApiServices
 @inject NavigationManager _navigation
-@inject CategoryService _categoryService
-@inject IHttpClientFactory _httpClientFactory
+@inject CategoryApiService _categoryApiService
 @inject IJSRuntime _js
 
 <KayakCove.Web.Components.Shared.ConfirmModal OnConfirmClicked="OnDeleteConfirmClicked"></KayakCove.Web.Components.Shared.ConfirmModal>
@@ -72,8 +71,8 @@ else
     {
         if (firstRender)
         {
-            var apiClient = _httpClientFactory.CreateClient("ApiClient");
-            Categories = await apiClient.GetFromJsonAsync<IEnumerable<CategoryDto>>("/api/category");
+
+            Categories = await _categoryApiService.GetAllCategoriesAsync();
             IsLoading = false;
             StateHasChanged();
         }
@@ -101,15 +100,13 @@ else
         await _js.InvokeVoidAsync("hideConfirmModal");
         if (isConfirmed && DeleteCategoryId != 0)
         {
-            var apiClient = _httpClientFactory.CreateClient("ApiClient");
-            await apiClient.DeleteAsync($"api/{DeleteCategoryId}");
-            // var isDeleted = await apiClient.DeleteAsync($"api/{DeleteCategoryId}");
-            // if (isDeleted)
-            //     _js?.ToastrSuccess("Category deleted");
-            // else
-            //     _js?.ToastrError("Something went wrong.");
+            var isDeleted = await _categoryApiService.DeleteCategoryAsync(DeleteCategoryId);
+            if (isDeleted)
+                _js.ToastrSuccess("Category deleted");
+            else
+                _js?.ToastrError("Something went wrong.");
 
-            Categories = await apiClient.GetFromJsonAsync<IEnumerable<CategoryDto>>("/api/category");
+            Categories = await _categoryApiService.GetAllCategoriesAsync();
         }
         DeleteCategoryId = 0;
         IsLoading = false;

@@ -1,11 +1,11 @@
 ﻿@page "/category/create"
 @page "/category/update/{id:int}"
-
 @rendermode InteractiveServer
 @using KayakCove.Application.DTOs
 @using KayakCove.Application.Services
 @using KayakCove.Domain.Entities
-@inject CategoryService _categoryService
+@using KayakCove.Web.ApiServices
+@inject CategoryApiService _categoryApiService
 @inject NavigationManager _navigationManager
 @inject IJSRuntime _js
 
@@ -37,12 +37,12 @@ else
                     <div class="row mt-3">
                         <div class="col-6 col-md-3">
                             <button type="submit" class="btn btn-success form-control" disabled="@IsLoading">
-                                <i class="bi bi-floppy"></i> Save
+                                <i class="bi bi-floppy"></i> @(Id > 0 ? "Update" : "Create")
                             </button>
                         </div>
                         <div class="col-6 col-md-3">
                             <button @onclick="OnUpsertCategoryCancel" class="btn btn-danger form-control" disabled="@IsLoading">
-                                <i class="bi bi-arrow-left-square"></i> Back to list
+                                <i class="bi bi-x-circle"></i> Cancel
                             </button>
                         </div>
                     </div>
@@ -68,7 +68,7 @@ else
     {
         if (Id > 0)
         {
-            CategoryDto = await _categoryService.GetCategoryByIdAsync(Id);
+            CategoryDto = await _categoryApiService.GetCategoryByIdAsync(Id);
             CategoryNameFallback = CategoryDto.Name;
         }
         IsLoading = false;
@@ -80,13 +80,17 @@ else
 
         if (Id == 0)
         {
-            await _categoryService.CreateCategoryAsync(CategoryDto);
+            await _categoryApiService.CreateCategoryAsync(CategoryDto);
             await _js.ToastrSuccess("Category created!");
         }
         else
         {
-            await _categoryService.UpdateCategoryAsync(CategoryDto);
-            await _js.ToastrSuccess("Category updated!");
+            var result = await _categoryApiService.UpdateCategoryAsync(CategoryDto);
+
+            if (result)
+                _js.ToastrSuccess("Category updated!");
+            else
+                _js.ToastrError("Something went wrong!");
         }
 
         IsLoading = false;

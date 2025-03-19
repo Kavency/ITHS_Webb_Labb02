@@ -14,8 +14,6 @@ public class ProductDto
     [StringLength(500)]
     public string Description { get; set; } = string.Empty;
 
-    [Required]
-    [Url]
     public string ImageUri { get; set; } = string.Empty;
 
     [Required]

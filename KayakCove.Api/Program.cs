@@ -12,28 +12,24 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient("ApiClient", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7247/");
-});
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection")));
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<CategoryService>();
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll", policy =>
-//        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-//});
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowClientApp", builder =>
-        builder.WithOrigins("https://localhost:7213/")
-               .AllowAnyHeader()
-               .AllowAnyMethod());
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowClientApp", builder =>
+//        builder.WithOrigins("https://localhost:7213/")
+//               .AllowAnyHeader()
+//               .AllowAnyMethod());
+//});
 
 
 var app = builder.Build();
@@ -51,7 +47,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors("AllowClientApp");
-//app.UseCors("AllowAll");
+//app.UseCors("AllowClientApp");
+app.UseCors("AllowAll");
 
 app.Run();

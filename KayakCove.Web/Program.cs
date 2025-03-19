@@ -1,4 +1,5 @@
 using KayakCove.Web.Components;
+using KayakCove.Web.ApiServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
+builder.Services.AddScoped<CategoryApiService>();
+builder.Services.AddScoped<ProductApiService>();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
