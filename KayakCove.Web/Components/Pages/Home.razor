@@ -1,7 +1,157 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@using KayakCove.Application.DTOs
+@using KayakCove.Web.ApiServices
+@using System.Globalization
+@inject CategoryApiService _categoryApiService
+@inject ProductApiService _productApiService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Shop</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (_isLoading)
+{
+    <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="images/loading.gif" alt="Loading data" />
+    </div>
+}
+else
+{
+    <div class="container-fluid px-0 m-0 full-width">
+        <div class="jumbotron-custom">
+            <div class="m-auto d-flex align-items-center" style="width: 400px; height: 10vh;">
 
-Welcome to your new app.
+                <div class="d-flex align-items-center" style="width: 100%;">
+                    <input type="text" class="form-control rounded-pill"
+                           placeholder="Search"
+                           style="width: 100%; padding-top: 5px; padding-bottom: 5px; padding-left: 25px;"
+                           @bind:event="oninput" @bind:get="_searchText" @bind:set="FilterProductsByName">
+                    <span style="position: relative; left: -40px;"><i class="bi bi-search"></i></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-4 mx-5 align-content-center">
+            <EditForm class="row my-2 justify-content-center" FormName="FilterCategoryForm" Model="_filteredCategoryId">
+                <div class="col-1 align-content-center text-end">Filter on:</div>
+                <div class="col-2">
+                    <InputSelect class="form-select col-4" @bind-Value="@_filteredCategoryId" id="Category" placeholder="Category">
+                        <option value="0">All</option>
+                        @foreach (var item in Categories)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+                <button class="col-1 btn btn-primary" @onclick="FilterProductsByCategory">Apply filter</button>
+            </EditForm>
+
+            @if (FilteredProducts.Count() == 0 || FilteredProducts is null)
+            {
+                <div class="row m-5 text-center">
+                    <p class="text-danger">Could not find any items matching the filter. <a href="" @onclick="ClearFilter">Clear filter</a></p>
+                </div>
+            }
+            else
+            {
+                <div class="row mt-4 mx-1">
+                    @foreach (var item in FilteredProducts)
+                    {
+                        <div class="col-12 col-md-6 col-lg-4 pe-3 mb-5">
+                            <div class="card" style="@(item.HasExpired ? "opacity: 0.4; pointer-events: none;" : "")">
+                                <div class="mt-3 mb-2 mx-3 row">
+                                    <div class="col-12 text-end px-3">
+                                        @item.Price.ToString("C", CultureInfo.GetCultureInfo("en-us"))
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    @if (string.IsNullOrEmpty(item.ImageUri))
+                                    {
+                                        <img class="card-img-top img-thumbnail img-rounded w-50 mt-2" src="/images/products/Default.png" style="">
+                                    }
+                                    else
+                                    {
+                                        <img class="card-img-top img-thumbnail img-rounded w-50 mt-2" src="@item.ImageUri" style="">
+                                    }
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title text-center lead text-success mb-4">@item.Name</h5>
+                                    <h4 class="text-center">
+                                        @if (item.HasExpired)
+                                        {
+                                            <i class="bi bi-cart3 btn btn-success text-right px-4 disabled"><p class="m-0">Discontinued</p></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-cart3 btn btn-success text-right px-4"><p class="m-0">Add to cart</p></i>
+                                        }
+                                    </h4>
+                                    <p class="card-text m-4">@item.Description</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private bool _isLoading { get; set; } = true;
+    private int _filteredCategoryId { get; set; } = 0;
+    private string _searchText { get; set; } = string.Empty;
+
+    public IEnumerable<ProductDto> Products { get; set; } = new List<ProductDto>();
+    public IEnumerable<ProductDto> FilteredProducts { get; set; } = new List<ProductDto>();
+    public IEnumerable<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        FilterProductsByCategory();
+        _isLoading = false;
+    }
+
+    private async Task LoadData()
+    {
+        Products = await _productApiService.GetAllProductsAsync();
+        Categories = await _categoryApiService.GetAllCategoriesAsync();
+    }
+
+    private void FilterProductsByCategory()
+    {
+        if (_filteredCategoryId == 0)
+        {
+            FilteredProducts = Products;
+        }
+        else
+        {
+            FilteredProducts = Products.Where(p => p.CategoryId == _filteredCategoryId).ToList();
+        }
+
+        _searchText = string.Empty;
+    }
+
+    private void FilterProductsByName(string searchTextEntered)
+    {
+        _filteredCategoryId = 0;
+
+        if (string.IsNullOrWhiteSpace(searchTextEntered))
+        {
+            FilteredProducts = Products;
+        }
+        else
+        {
+            FilteredProducts = Products.Where(x => x.Name.Contains(searchTextEntered, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        }
+
+        _searchText = searchTextEntered;
+    }
+
+    private void ClearFilter()
+    {
+        _filteredCategoryId = 0;
+        _searchText = string.Empty;
+        FilterProductsByCategory();
+    }
+}
