@@ -20,7 +20,7 @@
         </div>
     </div>
     <div class="card-body p-4">
-        <EditForm FormName="ApsertProductForm" Model="ProductDto" OnvalidSubmit="OnUpsertProductSubmit">
+        <EditForm FormName="UpsertProductForm" Model="ProductDto" OnvalidSubmit="OnUpsertProductSubmit">
             <DataAnnotationsValidator />
 
             <div class="border p-3 mt-4">
@@ -200,9 +200,8 @@
         var fileToDelete = ProductDto.ImageUri.Split('/').Last();
         var pathToImageToDelete = Path.Combine(_directoryPath, fileToDelete);
 
-        if (!File.Exists(pathToImageToDelete))
-            return;
-        File.Delete(pathToImageToDelete);
+        if (File.Exists(pathToImageToDelete))
+            File.Delete(pathToImageToDelete);
 
         ProductDto.ImageUri = string.Empty;
     }
