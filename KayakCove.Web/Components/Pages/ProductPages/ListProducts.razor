@@ -97,9 +97,45 @@ else
         Navigation.NavigateTo($"/product/update/{id}");
     }
 
-    private void NavigateToDeleteProductPage(int id)
+    private void OnDeleteClick(int id)
     {
-        Navigation.NavigateTo($"/product/delete/{id}");
+        _deleteProductId = id;
+        _js.InvokeVoidAsync("showConfirmModal");
+    }
+
+    private async Task OnDeleteConfirmClicked(bool isConfirmed)
+    {
+        _isLoading = true;
+        await _js.InvokeVoidAsync("hideConfirmModal");
+        if (isConfirmed && _deleteProductId != 0)
+        {
+            var isDeleted = await _productApiService.DeleteProductAsync(_deleteProductId);
+            if (isDeleted)
+            {
+                _js.ToastrSuccess("Product deleted");
+                await DeleteImage(_deleteProductId);
+            }
+            else
+                _js?.ToastrError("Something went wrong.");
+
+            Products = await _productApiService.GetAllProductsAsync();
+        }
+        _deleteProductId = 0;
+        _isLoading = false;
+    }
+
+
+    private async Task DeleteImage(int id)
+    {
+        var deletedProduct = Products.FirstOrDefault((p => p.Id == _deleteProductId));
+        if (deletedProduct is not null)
+        {
+            var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, deletedProduct.ImageUri.TrimStart('/'));
+            if (File.Exists(imagePath))
+            {
+                File.Delete(imagePath);
+            }
+        }
     }
 
 }
