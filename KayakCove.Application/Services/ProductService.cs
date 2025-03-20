@@ -2,6 +2,7 @@
 using KayakCove.Domain.Entities;
 using KayakCove.Infrastructure.Interfaces;
 
+
 namespace KayakCove.Application.Services;
 
 public class ProductService
