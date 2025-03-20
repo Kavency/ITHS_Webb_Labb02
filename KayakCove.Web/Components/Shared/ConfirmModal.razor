@@ -1,13 +1,14 @@
 ﻿<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="confirmModalLabel">Are you sure you want to delete?</h1>
+                <h1 class="modal-title fs-5" id="confirmModalLabel">Are you sure you want to delete this item?</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <button type="button" class="btn btn-lg btn-danger col-5" @onclick="() => ConfirmClicked(true)">Yes</button>
-                <button type="button" class="btn btn-lg btn-secondary col-5" data-bs-dismiss="modal">No</button>
+            <div class="modal-body row justify-content-center">
+                <button type="button" class="btn btn-danger col-3" @onclick="() => ConfirmClicked(true)">Yes</button>
+                <div class="col-1"></div>
+                <button type="button" class="btn btn-secondary col-3" data-bs-dismiss="modal">No</button>
             </div>
         </div>
     </div>
