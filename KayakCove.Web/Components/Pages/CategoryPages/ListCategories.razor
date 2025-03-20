@@ -4,11 +4,12 @@
 @using KayakCove.Application.Services
 @using KayakCove.Domain.Entities
 @using KayakCove.Web.ApiServices
+@using KayakCove.Web.Components.Shared
 @inject NavigationManager _navigation
 @inject CategoryApiService _categoryApiService
 @inject IJSRuntime _js
 
-<KayakCove.Web.Components.Shared.ConfirmModal OnConfirmClicked="OnDeleteConfirmClicked"></KayakCove.Web.Components.Shared.ConfirmModal>
+<ConfirmModal OnConfirmClicked="OnDeleteConfirmClicked"></ConfirmModal>
 
 @if (IsLoading)
 {

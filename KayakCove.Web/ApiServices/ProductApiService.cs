@@ -1,4 +1,6 @@
-﻿using KayakCove.Application.DTOs;
+﻿using Azure;
+using KayakCove.Application.DTOs;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
@@ -31,9 +33,6 @@ public class ProductApiService
     public async Task<ProductDto> CreateProductAsync(ProductDto dto)
     {
         var jsonContent = SerializeFromObject(dto);
-        Console.WriteLine("------------------------------");
-        Console.WriteLine(jsonContent.Headers); 
-        Console.WriteLine("------------------------------");
         var response = await _httpClient.PostAsync("products", jsonContent);
         response.EnsureSuccessStatusCode();
         var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -44,9 +43,18 @@ public class ProductApiService
 
     public async Task<bool> UpdateProductAsync(int id, ProductDto dto)
     {
-        Console.WriteLine("ApiService");
         var jsonContent = SerializeFromObject(dto);
         var response = await _httpClient.PutAsync($"products/{id}", jsonContent);
+        if (response.IsSuccessStatusCode)
+            return true;
+        else
+            return false;
+    }
+
+
+    public async Task<bool> DeleteProductAsync(int id)
+    {
+        var response = await _httpClient.DeleteAsync($"products/{id}");
         if (response.IsSuccessStatusCode)
             return true;
         else

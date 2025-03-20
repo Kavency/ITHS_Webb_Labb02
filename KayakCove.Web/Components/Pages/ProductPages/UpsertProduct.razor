@@ -8,6 +8,7 @@
 @inject ProductApiService _productApiService
 @inject CategoryApiService _categoryApiService
 @inject NavigationManager _navigationManager
+@inject IWebHostEnvironment _webHostEnvironment
 @inject IJSRuntime _js
 
 <div class="card shadow border-0 mt-4">
@@ -31,11 +32,11 @@
                 <div class="form-floating py-3 col-12">
                     <InputTextArea class="form-control" @bind-Value="@ProductDto.Description" id="Description" placeholder="Description" />
                     <label for="Description">Description</label>
+                    <ValidationMessage For="@(() => ProductDto.Description)" />
                 </div>
                 <div class="form-floating py-3 col-12">
                     <InputNumber class="form-control" @bind-Value="@ProductDto.Price" id="Price" placeholder="Price" />
                     <label for="Price">Price</label>
-
                     <ValidationMessage For="@(() => ProductDto.Price)" />
                 </div>
                 <div class="form-floating py-3 col-12">
@@ -51,9 +52,22 @@
                     <ValidationMessage For="@(() => ProductDto.CategoryId)" />
                 </div>
                 <div class="form-floating py-3 col-12">
-                    <InputText class="form-control" @bind-Value="@ProductDto.ImageUri" id="Image" placeholder="Image" />
-                    <label for="Image">Image</label>
-                    <ValidationMessage For="@(() => ProductDto.ImageUri)" />
+                    @if (string.IsNullOrEmpty(ProductDto.ImageUri))
+                    {
+                        <InputFile class="form-control pb-3" OnChange="UploadImageFile" id="imageFile" accept="image/x-png,image/jpg,image/jpeg" />
+                        <label for="imageFile">Upload File</label>
+                    }
+                    @if (!string.IsNullOrEmpty(ProductDto.ImageUri))
+                    {
+                        <div class="row">
+                            <div class="col-3">
+                                <img src="@ProductDto.ImageUri" width="300" height="300" alt="Image of a product." class="img-thumbnail" />
+                            </div>
+                            <div class="col-9">
+                                <i class="bi bi-trash btn btn-outline-danger" @onclick="OnDeleteImageClick">Remove</i>
+                            </div>
+                        </div>
+                    }
                 </div>
                 <div class ="form-floating py-3 col-12">
                     <InputNumber class="form-control" @bind-Value="@ProductDto.Quantity" id="Quantity" placeholder="Quantity" />
@@ -64,10 +78,10 @@
                     <InputCheckbox class="form-switch" @bind-Value="@ProductDto.HasExpired" />
                 </div>
                 <div class="form-group py-2">
-                    <button type="submit" class="btn btn-success m-3" disabled="@IsLoading">
+                    <button type="submit" class="btn btn-success m-3" disabled="@_isLoading">
                         <i class="bi bi-floppy"></i> @(Id > 0 ? "Update" : "Create")
                     </button>
-                    <button @onclick="OnUpsertProductCancel" class="btn btn-danger m-3" disabled="@IsLoading">
+                    <button @onclick="OnUpsertProductCancel" class="btn btn-danger m-3" disabled="@_isLoading">
                         <i class="bi bi-x-circle"></i> Cancel
                     </button>
                 </div>
@@ -77,16 +91,16 @@
 </div>
 
 @code {
-    private bool IsLoading { get; set; } = true;
+    private bool _isLoading { get; set; } = true;
+    private string? _directoryPath { get; set; }
 
     [Parameter]
     public int Id { get; set; }
 
     [SupplyParameterFromForm]
-    public ProductDto ProductDto { get; set; } = new ProductDto() { Category = new Category() { Id = 0, Name = "" } };
+    public ProductDto ProductDto { get; set; } = new ProductDto() { Category = new Category() { Id = 0, Name = string.Empty } };
 
     public ProductDto ProductFallback { get; set; } = new ProductDto();
-
     public IEnumerable<CategoryDto> Categories = new List<CategoryDto>();
 
 
@@ -96,9 +110,16 @@
         {
             ProductDto = await _productApiService.GetProductByIdAsync(Id);
 
+            var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, ProductDto.ImageUri.TrimStart('/'));
+            if (!File.Exists(imagePath))
+            {
+                ProductDto.ImageUri = string.Empty;
+            }
+
             ProductFallback.Name = ProductDto.Name;
             ProductFallback.Description = ProductDto.Description;
             ProductFallback.Price = ProductDto.Price;
+            ProductFallback.ImageUri = ProductDto.ImageUri;
             ProductFallback.Quantity = ProductDto.Quantity;
             ProductFallback.CategoryId = ProductDto.CategoryId;
             ProductFallback.HasExpired = ProductDto.HasExpired;
@@ -106,12 +127,13 @@
 
         Categories = await _categoryApiService.GetAllCategoriesAsync();
 
-        IsLoading = false;
+        _directoryPath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products");
+        _isLoading = false;
     }
 
     public async Task OnUpsertProductSubmit()
     {
-        IsLoading = true;
+        _isLoading = true;
 
         if (Id == 0)
         {
@@ -120,6 +142,8 @@
         }
         else
         {
+            ProductDto.Category = new Category() { Id = 0, Name = string.Empty };
+
             var result = await _productApiService.UpdateProductAsync(Id, ProductDto);
 
             if (result)
@@ -128,7 +152,7 @@
                 _js.ToastrError("Something went wrong!");
         }
 
-        IsLoading = false;
+        _isLoading = false;
 
         _navigationManager.NavigateTo("products");
     }
@@ -138,10 +162,48 @@
         ProductDto.Name = ProductFallback.Name;
         ProductDto.Description = ProductFallback.Description;
         ProductDto.Price = ProductFallback.Price;
+        ProductDto.ImageUri = ProductFallback.ImageUri;
         ProductDto.Quantity = ProductFallback.Quantity;
         ProductDto.CategoryId = ProductFallback.CategoryId;
         ProductDto.HasExpired = ProductFallback.HasExpired;
 
         _navigationManager.NavigateTo("products");
+    }
+
+    private async Task UploadImageFile(InputFileChangeEventArgs e)
+    {
+        _isLoading = true;
+
+        var file = e.File;
+        FileInfo fileInfo = new(file.Name);
+        var newFileName = $"{Guid.NewGuid()}{fileInfo.Extension}";
+
+        if (!Directory.Exists(_directoryPath))
+        {
+            Directory.CreateDirectory(_directoryPath);
+        }
+
+        var path = Path.Combine(_directoryPath, newFileName);
+        await using FileStream fileStream = new(path, FileMode.Create);
+        await file.OpenReadStream(file.Size).CopyToAsync(fileStream);
+
+        ProductDto.ImageUri = $"/images/products/{newFileName}";
+
+        _isLoading = false;
+    }
+
+    private void OnDeleteImageClick()
+    {
+        if (ProductDto.ImageUri is null)
+            return;
+
+        var fileToDelete = ProductDto.ImageUri.Split('/').Last();
+        var pathToImageToDelete = Path.Combine(_directoryPath, fileToDelete);
+
+        if (!File.Exists(pathToImageToDelete))
+            return;
+        File.Delete(pathToImageToDelete);
+
+        ProductDto.ImageUri = string.Empty;
     }
 }

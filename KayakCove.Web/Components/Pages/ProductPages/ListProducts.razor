@@ -1,13 +1,18 @@
 ﻿@page "/products"
+@rendermode InteractiveServer
 @using KayakCove.Application.DTOs
+@using KayakCove.Application.Services
 @using KayakCove.Web.ApiServices
+@using KayakCove.Web.Components.Shared
 @inject ProductApiService _productApiService
 @inject NavigationManager Navigation
-@rendermode InteractiveServer
+@inject IJSRuntime _js
+@inject IWebHostEnvironment _webHostEnvironment
 
 <PageTitle>Products Page</PageTitle>
+<ConfirmModal OnConfirmClicked="OnDeleteConfirmClicked"></ConfirmModal>
 
-@if (IsLoading)
+@if (_isLoading)
 {
     <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
         <img src="images/loading.gif" alt="Loading data" />
@@ -56,7 +61,7 @@ else
                                 <td>@item.HasExpired</td>
                                 <td>
                                     <button class="btn btn-primary m-1 py-1 px-2 " @onclick="() => NavigateToUpdateProductPage(item.Id)"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => NavigateToDeleteProductPage(item.Id)"><i class="bi bi-trash"></i></button>
+                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => OnDeleteClick(item.Id)"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         }
@@ -68,7 +73,8 @@ else
 }
 
 @code {
-    public bool IsLoading { get; set; } = true;
+    private bool _isLoading { get; set; } = true;
+    private int _deleteProductId { get; set; }
     public IEnumerable<ProductDto> Products;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -76,7 +82,7 @@ else
         if (firstRender)
         {
             Products = await _productApiService.GetAllProductsAsync();
-            IsLoading = false;
+            _isLoading = false;
             StateHasChanged();
         }
     }
@@ -91,9 +97,45 @@ else
         Navigation.NavigateTo($"/product/update/{id}");
     }
 
-    private void NavigateToDeleteProductPage(int id)
+    private void OnDeleteClick(int id)
     {
-        Navigation.NavigateTo($"/product/delete/{id}");
+        _deleteProductId = id;
+        _js.InvokeVoidAsync("showConfirmModal");
+    }
+
+    private async Task OnDeleteConfirmClicked(bool isConfirmed)
+    {
+        _isLoading = true;
+        await _js.InvokeVoidAsync("hideConfirmModal");
+        if (isConfirmed && _deleteProductId != 0)
+        {
+            var isDeleted = await _productApiService.DeleteProductAsync(_deleteProductId);
+            if (isDeleted)
+            {
+                _js.ToastrSuccess("Product deleted");
+                await DeleteImage(_deleteProductId);
+            }
+            else
+                _js?.ToastrError("Something went wrong.");
+
+            Products = await _productApiService.GetAllProductsAsync();
+        }
+        _deleteProductId = 0;
+        _isLoading = false;
+    }
+
+
+    private async Task DeleteImage(int id)
+    {
+        var deletedProduct = Products.FirstOrDefault((p => p.Id == _deleteProductId));
+        if (deletedProduct is not null)
+        {
+            var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, deletedProduct.ImageUri.TrimStart('/'));
+            if (File.Exists(imagePath))
+            {
+                File.Delete(imagePath);
+            }
+        }
     }
 
 }
