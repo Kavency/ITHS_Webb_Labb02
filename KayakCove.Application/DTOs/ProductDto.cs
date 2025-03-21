@@ -20,8 +20,6 @@ public class ProductDto
     [Range(0.01, 250000)]
     public decimal Price { get; set; }
 
-    public int Quantity { get; set; }
-
     public bool HasExpired { get; set; }
 
     [Required]

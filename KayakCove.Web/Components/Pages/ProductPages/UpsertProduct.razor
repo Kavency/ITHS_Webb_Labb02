@@ -69,10 +69,6 @@
                         </div>
                     }
                 </div>
-                <div class ="form-floating py-3 col-12">
-                    <InputNumber class="form-control" @bind-Value="@ProductDto.Quantity" id="Quantity" placeholder="Quantity" />
-                    <label for="Quantity">Quantity</label>
-                </div>
                 <div class="form-floating py-3 col-12">
                     Expired
                     <InputCheckbox class="form-switch" @bind-Value="@ProductDto.HasExpired" />
@@ -120,7 +116,6 @@
             ProductFallback.Description = ProductDto.Description;
             ProductFallback.Price = ProductDto.Price;
             ProductFallback.ImageUri = ProductDto.ImageUri;
-            ProductFallback.Quantity = ProductDto.Quantity;
             ProductFallback.CategoryId = ProductDto.CategoryId;
             ProductFallback.HasExpired = ProductDto.HasExpired;
         }
@@ -163,7 +158,6 @@
         ProductDto.Description = ProductFallback.Description;
         ProductDto.Price = ProductFallback.Price;
         ProductDto.ImageUri = ProductFallback.ImageUri;
-        ProductDto.Quantity = ProductFallback.Quantity;
         ProductDto.CategoryId = ProductFallback.CategoryId;
         ProductDto.HasExpired = ProductFallback.HasExpired;
 
