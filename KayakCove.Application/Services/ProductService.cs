@@ -25,7 +25,6 @@ public class ProductService
             Description = p.Description,
             ImageUri = p.ImageUri,
             Price = p.Price,
-            Quantity = p.Quantity,
             HasExpired = p.HasExpired,
             CategoryId = p.CategoryId,
             Category = p.Category
@@ -54,7 +53,6 @@ public class ProductService
         product.Description = dto.Description;
         product.ImageUri = dto.ImageUri;
         product.Price = dto.Price;
-        product.Quantity = dto.Quantity;
         product.HasExpired = dto.HasExpired;
         product.CategoryId = dto.CategoryId;
 
@@ -77,7 +75,6 @@ public class ProductService
             Description = entity.Description,
             ImageUri = entity.ImageUri,
             Price = entity.Price,
-            Quantity = entity.Quantity,
             HasExpired = entity.HasExpired,
             CategoryId = entity.CategoryId
         };
@@ -93,7 +90,6 @@ public class ProductService
             Description = dto.Description,
             ImageUri = dto.ImageUri,
             Price = dto.Price,
-            Quantity = dto.Quantity,
             HasExpired = dto.HasExpired,
             CategoryId = dto.CategoryId
         };
