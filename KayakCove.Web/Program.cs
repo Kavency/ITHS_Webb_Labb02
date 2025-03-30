@@ -9,6 +9,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddScoped<CategoryApiService>();
 builder.Services.AddScoped<ProductApiService>();
+builder.Services.AddScoped<RoleApiService>();
+builder.Services.AddScoped<UserApiService>();
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
