@@ -1,0 +1,121 @@
+﻿@page "/user/register"
+@rendermode InteractiveServer
+@using KayakCove.Application.DTOs
+@using KayakCove.Web.ApiServices
+@using KayakCove.Domain.Entities
+@inject RoleApiService _roleApiService
+@inject UserApiService _userApiService
+@inject NavigationManager _navigationManager
+
+<div class="container">
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-black bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Register account</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <EditForm FormName="RegisterAccountForm" Model="UserDto" OnvalidSubmit="AddUserSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="border p-3 mt-4">
+                <div class="form-floating py-3 col-12">
+                    <InputText class="form-control" @bind-Value="@UserDto.Username" id="Username" placeholder="Username" />
+                    <label for="Username">*Username</label>
+                    <ValidationMessage For="@(() => UserDto.Username)" />
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <InputText type="password" class="form-control" @bind-Value="@UserDto.Password" id="Password" placeholder="Password" />
+                    <label for="Password">*Password</label>
+                    <ValidationMessage For="@(() => UserDto.Password)" />
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <InputText class="form-control" @bind-Value="@UserDto.Firstname" id="Firstname" placeholder="Firstname" />
+                    <label for="Firstname">*Firstname</label>
+                    <ValidationMessage For="@(() => UserDto.Firstname)" />
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <InputText class="form-control" @bind-Value="@UserDto.Lastname" id="Lastname" placeholder="Lastname" />
+                    <label for="Lastname">*Lastname</label>
+                    <ValidationMessage For="@(() => UserDto.Lastname)" />
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <InputText type="email" class="form-control" @bind-Value="@UserDto.Email" id="Email" placeholder="Email" />
+                    <label for="Email">*Email</label>
+                    <ValidationMessage For="@(() => UserDto.Email)" />
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <InputText class="form-control" @bind-Value="@UserDto.Phonenumber" id="Phonenumber" placeholder="Phonenumber" />
+                    <label for="Phonenumber">Phonenumber</label>
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <InputText class="form-control" @bind-Value="@UserDto.Streetaddress" id="Streetaddress" placeholder="Streetaddress" />
+                    <label for="Streetaddress">Streetaddress</label>
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <InputText class="form-control" @bind-Value="@UserDto.Postalcode" id="Postalcode" placeholder="Postalcode" />
+                    <label for="Postalcode">Postalcode</label>
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <InputText class="form-control" @bind-Value="@UserDto.City" id="City" placeholder="City" />
+                    <label for="City">City</label>
+                </div>
+                <div class="form-floating py-3 col-12">
+                    <InputText class="form-control" @bind-Value="@UserDto.Country" id="Country" placeholder="Country" />
+                    <label for="Country">Country</label>
+                </div>
+
+                <div class="form-floating py-3 col-12">
+                    <InputSelect class="form-select" @bind-Value="@UserDto.RoleId" id="Role" placeholder="Role">
+                        <option value="0" disabled>-- Select Role --</option>
+                        @foreach (var item in Roles)
+                        {
+                            <option value="@item.Id">@item.Title</option>
+                        }
+                    </InputSelect>
+                    <label for="Role">Role</label>
+
+                    <ValidationMessage For="@(() => UserDto.RoleId)" />
+                </div>
+
+                <div class="form-group py-2">
+                    <button type="submit" class="btn btn-success m-3" disabled="@_isLoading">
+                        <i class="bi bi-floppy"></i> Create Account
+                    </button>
+                    <button @onclick="OnAddUserCancel" class="btn btn-danger m-3" disabled="@_isLoading">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+</div>
+
+@code {
+    private bool _isLoading { get; set; } = true;
+
+    public UserDto UserDto { get; set; } = new UserDto() { Role = new Role { Id = 0, Title = string.Empty } };
+    public IEnumerable<RoleDto> Roles = new List<RoleDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Roles = await _roleApiService.GetAllRolesAsync();
+
+        _isLoading = false;
+    }
+
+    private void AddUserSubmit()
+    {
+        _userApiService.CreateUserAsync(UserDto);
+    }
+
+    private void OnAddUserCancel()
+    {
+        UserDto = new UserDto() { Role = new Role { Id = 0, Title = string.Empty } };
+
+        _navigationManager.NavigateTo("..");
+    }
+}
