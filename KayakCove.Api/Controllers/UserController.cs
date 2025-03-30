@@ -18,28 +18,28 @@ public class UserController : ControllerBase
 
 
     [HttpGet]
-    public async Task<IActionResult> GetAllUsersAsync()
+    public async Task<IActionResult> GetAllUsers()
     {
         var roleDtos = await _userService.GetAllUsersAsync();
         return Ok(roleDtos);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserByIdAsync(int id)
+    public async Task<IActionResult> GetUserById(int id)
     {
         var roleDto = await _userService.GetUserByIdAsync(id);
         return roleDto == null ? NotFound() : Ok(roleDto);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUserAsync([FromBody] UserDto userDto)
+    public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
     {
         await _userService.CreateUserAsync(userDto);
-        return CreatedAtAction(nameof(GetUserByIdAsync), new { id = userDto.Id }, userDto);
+        return CreatedAtAction(nameof(GetUserById), new { id = userDto.Id }, userDto);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserDto userDto)
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDto userDto)
     {
         if (id != userDto.Id) return BadRequest();
         await _userService.UpdateUserAsync(userDto);
@@ -47,7 +47,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUserAsync(int id)
+    public async Task<IActionResult> DeleteUser(int id)
     {
         await _userService.DeleteUserAsync(id);
         return NoContent();
