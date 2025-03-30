@@ -19,46 +19,48 @@
 }
 else
 {
-    <div class="card shadow border-0 mt-4">
-        <div class="card-header bg-black bg-gradient ml-0 py-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <h2 class="text-white py-2">Categories</h2>
+    <div class="container">
+        <div class="card shadow border-0 mt-4">
+            <div class="card-header bg-black bg-gradient ml-0 py-3">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h2 class="text-white py-2">Categories</h2>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="card-body p-4">
-            <div class="row pb-3">
-                <div class="col-12 text-end">
-                    <button class="btn btn-lg btn-success" @onclick="NavigateToCreateCategoryPage"><i class="bi bi-plus-square"></i> Add Category</button>
+            <div class="card-body p-4">
+                <div class="row pb-3">
+                    <div class="col-12 text-end">
+                        <button class="btn btn-lg btn-success" @onclick="NavigateToCreateCategoryPage"><i class="bi bi-plus-square"></i> Add Category</button>
+                    </div>
                 </div>
-            </div>
-            @if (Categories.Any())
-            {
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach (var item in Categories)
-                        {
+                @if (Categories.Any())
+                {
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td>@item.Id</td>
-                                <td>@item.Name</td>
-                                <td>
-                                    <button class="btn btn-primary m-1 py-1 px-2" @onclick="() => NavigateToUpdateCategoryPage(item.Id)"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => OnDeleteClicked(item.Id)"><i class="bi bi-trash"></i></button>
-                                </td>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th></th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            }
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Categories)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.Name</td>
+                                    <td>
+                                        <button class="btn btn-primary m-1 py-1 px-2" @onclick="() => NavigateToUpdateCategoryPage(item.Id)"><i class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => OnDeleteClicked(item.Id)"><i class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
         </div>
     </div>
 }
