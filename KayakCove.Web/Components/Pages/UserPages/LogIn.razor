@@ -1,7 +1,98 @@
 ﻿@page "/login"
+@rendermode InteractiveServer
+@using KayakCove.Application.DTOs
+@using KayakCove.Domain.Entities
+@using KayakCove.Web.ApiServices
+@inject NavigationManager _navigationManager
+@inject AuthenticationService _authService
+@inject UserApiService _userApiService
+@inject IToastService _toastService
 
-
+<div class="container">
+    <div class="card shadow border-0 mt-4">
+        <div class="card-header bg-black bg-gradient ml-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2">Login</h2>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <EditForm Model="UserDto" FormName="LoginForm" OnValidSubmit="OnLoginSubmit">
+                <DataAnnotationsValidator />
+                <div class="border p-3 mt-4">
+                    <div class="form-floating py-3 col-12">
+                        <InputText @bind-Value="UserDto.Username" class="form-control" id="Username" placeholder="Username" />
+                        <label for="Username">Username</label>
+                    </div>
+                    <div class="form-floating py-3 col-12">
+                        <InputText @bind-Value="UserDto.Password" type="password" class="form-control" id="Password" placeholder="Password" />
+                        <label for="Password">Password</label>
+                    </div>
+                    <div class="row mt-3 justify-content-center">
+                        <span class="text-danger text-center mb-3">@_errorMessage</span>
+                        <div class="col-6 col-md-3">
+                            <button type="submit" @onclick="OnLoginSubmit" class="btn btn-success form-control" disabled="@_isLoading">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </button>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <button @onclick="OnLoginCancel" class="btn btn-danger form-control" disabled="@_isLoading">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
 
 @code {
+    private bool _isLoading { get; set; } = false;
+    private string _errorMessage { get; set; } = string.Empty;
 
+    public UserDto UserDto { get; set; } = new UserDto();
+
+
+    private async Task OnLoginSubmit()
+    {
+        _isLoading = true;
+
+
+
+        if (string.IsNullOrEmpty(UserDto.Username) || string.IsNullOrEmpty(UserDto.Password))
+        {
+            _errorMessage = "Must provide values for Username and Password";
+            _isLoading = false;
+            return;
+        } 
+
+        var result = await _userApiService.GetUserByUsernameAsync(UserDto.Username);
+
+        if (result.Username is null || result.Password != UserDto.Password)
+        {
+            _errorMessage = "Wrong Username or Password";
+            _toastService.ShowError("Login failed");
+
+            UserDto = new();
+        }
+        else
+        {
+            // await _authService.SetTokenAsync(token);
+
+            _isLoading = false;
+            // Show toaster of success ??
+            _toastService.ShowSuccess("Login successful");
+            _navigationManager.NavigateTo("..");
+
+        }
+
+        _isLoading = false;
+    }
+
+    private void OnLoginCancel()
+    {
+        _navigationManager.NavigateTo("..");
+    }
 }
