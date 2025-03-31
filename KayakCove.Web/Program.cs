@@ -1,10 +1,12 @@
 using KayakCove.Web.Components;
 using KayakCove.Web.ApiServices;
+using Blazored.Toast;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddBlazoredToast();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<AuthenticationService>();
