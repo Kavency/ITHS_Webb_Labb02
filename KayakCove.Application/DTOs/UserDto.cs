@@ -31,9 +31,6 @@ public class UserDto
     public string City { get; set; }
     
     public string Country { get; set; }
-    public DateTime AccountCreated { get; set; }
-    public DateTime LastLogin { get; set; }
-    public DateTime LastPasswordChange { get; set; }
 
     [Required]
     public int RoleId { get; set; }

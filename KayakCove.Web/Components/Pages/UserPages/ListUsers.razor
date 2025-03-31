@@ -43,9 +43,6 @@ else
                                 <th>Username</th>
                                 <th>Firstname</th>
                                 <th>Lastname</th>
-                                <th>Account created</th>
-                                <th>Last password change</th>
-                                <th>Last login</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -58,10 +55,6 @@ else
                                     <td>@item.Username</td>
                                     <td>@item.Firstname</td>
                                     <td>@item.Lastname</td>
-                                    <td>@item.AccountCreated</td>
-                                    <td>@item.LastPasswordChange</td>
-                                    <td>@item.LastLogin</td>
-
                                     <td>
                                         <button class="btn btn-primary m-1 py-1 px-2" @onclick="() => NavigateToUpdateUserPage(item.Id)"><i class="bi bi-pencil"></i></button>
                                         <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => OnDeleteClicked(item.Id)"><i class="bi bi-trash"></i></button>

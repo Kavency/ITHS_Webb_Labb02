@@ -13,9 +13,6 @@ public class User
     public string Postalcode { get; set; }
     public string City { get; set; }
     public string Country { get; set; }
-    public DateTime AccountCreated { get; set; }
-    public DateTime LastLogin { get; set; }
-    public DateTime LastPasswordChange { get; set; }
     public int RoleId { get; set; }
     public Role Role { get; set; }
 }

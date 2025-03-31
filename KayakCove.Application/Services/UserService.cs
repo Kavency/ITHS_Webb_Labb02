@@ -30,9 +30,6 @@ public class UserService
             City = u.City,
             Country = u.Country,
             Phonenumber = u.Phonenumber,
-            AccountCreated = u.AccountCreated,
-            LastLogin = u.LastLogin,
-            LastPasswordChange = u.LastPasswordChange,
             RoleId = u.RoleId
         });
 
@@ -67,9 +64,6 @@ public class UserService
         user.City = userDto.City;
         user.Country = userDto.Country;
         user.Phonenumber = userDto.Phonenumber;
-        user.AccountCreated = userDto.AccountCreated;
-        user.LastLogin = userDto.LastLogin;
-        user.LastPasswordChange = userDto.LastPasswordChange;
         user.RoleId = userDto.RoleId;
 
         return await _userRepository.UpdateUserAsync(user);
@@ -97,9 +91,6 @@ public class UserService
             City = entity.City,
             Country = entity.Country,
             Phonenumber = entity.Phonenumber,
-            AccountCreated = entity.AccountCreated,
-            LastLogin = entity.LastLogin,
-            LastPasswordChange = entity.LastPasswordChange,
             RoleId = entity.RoleId,
             Role = entity.Role
         };
@@ -121,9 +112,6 @@ public class UserService
             City = dto.City,
             Country = dto.Country,
             Phonenumber = dto.Phonenumber,
-            AccountCreated = dto.AccountCreated,
-            LastLogin = dto.LastLogin,
-            LastPasswordChange = dto.LastPasswordChange,
             RoleId = dto.RoleId
         };
     }
