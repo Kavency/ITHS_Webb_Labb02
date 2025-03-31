@@ -18,6 +18,11 @@ public class UserApiService
         return await _httpClient.GetFromJsonAsync<List<UserDto>>("user");
     }
 
+    public async Task<UserDto> GetUserByUsernameAsync(string username)
+    {
+        return await _httpClient.GetFromJsonAsync<UserDto>($"user/{username}");
+    }
+
     public async Task<UserDto> GetUserByIdAsync(int id)
     {
         return await _httpClient.GetFromJsonAsync<UserDto>($"user/{id}");

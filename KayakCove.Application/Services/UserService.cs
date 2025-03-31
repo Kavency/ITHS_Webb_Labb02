@@ -43,6 +43,13 @@ public class UserService
         return userDto;
     }
 
+    public async Task<UserDto> GetUserByUsernameAsync(string username)
+    {
+        var entity = await _userRepository.GetUserByUsernameAsync(username);
+        var userDto = ConvertEntityToDto(entity);
+        return userDto;
+    }
+
     public async Task<bool> CreateUserAsync(UserDto dto)
     {
         var user = ConvertDtoToEntity(dto);
@@ -78,6 +85,11 @@ public class UserService
 
     private UserDto ConvertEntityToDto(User entity)
     {
+        if (entity is null)
+        {
+            return new UserDto();
+        }
+
         return new UserDto
         {
             Id = entity.Id,

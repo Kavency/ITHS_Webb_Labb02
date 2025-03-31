@@ -24,7 +24,14 @@ public class UserController : ControllerBase
         return Ok(roleDtos);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{username}")]
+    public async Task<IActionResult> GetUserByUsername(string username)
+    {
+        var roleDto = await _userService.GetUserByUsernameAsync(username);
+        return roleDto == null ? NotFound() : Ok(roleDto);
+    }
+
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetUserById(int id)
     {
         var roleDto = await _userService.GetUserByIdAsync(id);
