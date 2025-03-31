@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
+builder.Services.AddSingleton<AuthenticationService>();
 builder.Services.AddScoped<CategoryApiService>();
 builder.Services.AddScoped<ProductApiService>();
 builder.Services.AddScoped<RoleApiService>();

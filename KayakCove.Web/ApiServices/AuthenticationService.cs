@@ -4,30 +4,34 @@ namespace KayakCove.Web.ApiServices;
 
 public class AuthenticationService
 {
-    private readonly IJSRuntime _jsRuntime;
+    private readonly IServiceProvider _serviceProvider;
 
-    public AuthenticationService(IJSRuntime jsRuntime)
+    public AuthenticationService(IServiceProvider serviceProvider)
     {
-        _jsRuntime = jsRuntime;
+        _serviceProvider = serviceProvider;
+    }
+
+    public async Task SetTokenAsync(string token)
+    {
+        var jsRuntime = _serviceProvider.GetRequiredService<IJSRuntime>();
+        await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "authToken", token);
+    }
+
+    public async Task<string> GetTokenAsync()
+    {
+        var jsRuntime = _serviceProvider.GetRequiredService<IJSRuntime>();
+        return await jsRuntime.InvokeAsync<string>("sessionStorage.getItem", "authToken");
     }
 
     public async Task<bool> IsLoggedInAsync()
     {
-        var result = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "isLoggedIn");
-        return result == "true";
-    }
-
-    public async Task LoginAsync(int id, string username)
-    {
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "isLoggedIn", "true");
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "id", id);
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "username", username);
+        var token = await GetTokenAsync();
+        return !string.IsNullOrEmpty(token);
     }
 
     public async Task LogoutAsync()
     {
-        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "isLoggedIn");
-        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "id");
-        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "username");
+        var jsRuntime = _serviceProvider.GetRequiredService<IJSRuntime>();
+        await jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", "authToken");
     }
 }
