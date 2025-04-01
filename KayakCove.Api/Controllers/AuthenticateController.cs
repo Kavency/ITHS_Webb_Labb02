@@ -1,6 +1,5 @@
 ﻿using KayakCove.Application.DTOs;
 using KayakCove.Application.Services;
-using KayakCove.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -48,7 +47,7 @@ namespace KayakCove.Api.Controllers
             new Claim(ClaimTypes.Name, username),
             new Claim(ClaimTypes.Role, role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+            };
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
@@ -59,7 +58,5 @@ namespace KayakCove.Api.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-
     }
 }
