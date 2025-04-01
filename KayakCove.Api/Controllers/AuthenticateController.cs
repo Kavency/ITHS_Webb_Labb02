@@ -1,5 +1,6 @@
 ﻿using KayakCove.Application.DTOs;
 using KayakCove.Application.Services;
+using KayakCove.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -25,10 +26,10 @@ namespace KayakCove.Api.Controllers
         {
             var result = await _userService.AuthenticateUserAsync(request.Username, request.Password);
             // Validate user credentials (replace this with your user validation logic)
-            if (result)
+            if (result is not null)
             {
                 // Generate JWT
-                var token = GenerateJwtToken(request.Username);
+                var token = GenerateJwtToken(result.Username, result.Role.Title);
                 return Ok(new { token });
             }
             else
@@ -37,7 +38,7 @@ namespace KayakCove.Api.Controllers
             }
         }
 
-        private string GenerateJwtToken(string username)
+        private string GenerateJwtToken(string username, string role)
         {
             var securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -45,6 +46,7 @@ namespace KayakCove.Api.Controllers
             var claims = new[]
             {
             new Claim(ClaimTypes.Name, username),
+            new Claim(ClaimTypes.Role, role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
