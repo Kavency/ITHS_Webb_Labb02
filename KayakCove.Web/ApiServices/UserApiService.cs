@@ -18,9 +18,14 @@ public class UserApiService
         return await _httpClient.GetFromJsonAsync<List<UserDto>>("user");
     }
 
-    public async Task<UserDto> GetUserByUsernameAsync(string username)
+
+
+    public async Task<string> AuthenticateUserAsync(LoginRequestDto loginRequest)
     {
-        return await _httpClient.GetFromJsonAsync<UserDto>($"user/{username}");
+            var response = await _httpClient.PostAsJsonAsync("authenticate/login", loginRequest);
+            var responseData = await response.Content.ReadFromJsonAsync<TokenResponseDto>();
+            var token = responseData.Token;
+            return token;
     }
 
     public async Task<UserDto> GetUserByIdAsync(int id)

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using KayakCove.Application.Services;
 using KayakCove.Application.DTOs;
 
@@ -24,12 +23,6 @@ public class UserController : ControllerBase
         return Ok(roleDtos);
     }
 
-    [HttpGet("{username}")]
-    public async Task<IActionResult> GetUserByUsername(string username)
-    {
-        var roleDto = await _userService.GetUserByUsernameAsync(username);
-        return roleDto == null ? NotFound() : Ok(roleDto);
-    }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetUserById(int id)

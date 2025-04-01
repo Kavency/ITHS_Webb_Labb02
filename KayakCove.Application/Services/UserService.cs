@@ -43,11 +43,15 @@ public class UserService
         return userDto;
     }
 
-    public async Task<UserDto> GetUserByUsernameAsync(string username)
+    public async Task<bool> AuthenticateUserAsync(string username, string password)
     {
-        var entity = await _userRepository.GetUserByUsernameAsync(username);
-        var userDto = ConvertEntityToDto(entity);
-        return userDto;
+        var entity = await _userRepository.AuthenticateUserAsync(username, password);
+        
+        if(entity is null)
+        {
+            return false;
+        }
+        return true;
     }
 
     public async Task<bool> CreateUserAsync(UserDto dto)

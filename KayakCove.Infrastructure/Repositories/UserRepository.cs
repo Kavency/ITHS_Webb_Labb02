@@ -24,9 +24,9 @@ public class UserRepository : IUserRepository
         return await _context.Users.FindAsync(id);
     }
 
-    public async Task<User> GetUserByUsernameAsync(string username)
+    public async Task<User> AuthenticateUserAsync(string username, string password)
     {
-        var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == username);
+        var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
         return user;
     }
 
