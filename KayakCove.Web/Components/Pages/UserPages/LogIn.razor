@@ -3,10 +3,13 @@
 @using KayakCove.Application.DTOs
 @using KayakCove.Domain.Entities
 @using KayakCove.Web.ApiServices
+@using Microsoft.AspNetCore.Identity.Data
 @inject NavigationManager _navigationManager
 @inject AuthenticationService _authService
 @inject UserApiService _userApiService
 @inject IToastService _toastService
+@inject HttpClient _httpClient
+@inject IJSRuntime _jsRuntime
 
 <div class="container">
     <div class="card shadow border-0 mt-4">
@@ -18,15 +21,15 @@
             </div>
         </div>
         <div class="card-body p-4">
-            <EditForm Model="UserDto" FormName="LoginForm" OnValidSubmit="OnLoginSubmit">
+            <EditForm Model="_username" FormName="LoginForm" OnValidSubmit="OnLoginSubmit">
                 <DataAnnotationsValidator />
                 <div class="border p-3 mt-4">
                     <div class="form-floating py-3 col-12">
-                        <InputText @bind-Value="UserDto.Username" class="form-control" id="Username" placeholder="Username" />
+                        <InputText @bind-Value="_username" class="form-control" id="Username" placeholder="Username" />
                         <label for="Username">Username</label>
                     </div>
                     <div class="form-floating py-3 col-12">
-                        <InputText @bind-Value="UserDto.Password" type="password" class="form-control" id="Password" placeholder="Password" />
+                        <InputText @bind-Value="_password" type="password" class="form-control" id="Password" placeholder="Password" />
                         <label for="Password">Password</label>
                     </div>
                     <div class="row mt-3 justify-content-center">
@@ -51,41 +54,40 @@
 @code {
     private bool _isLoading { get; set; } = false;
     private string _errorMessage { get; set; } = string.Empty;
-
-    public UserDto UserDto { get; set; } = new UserDto();
+    private string _username { get; set; } = string.Empty;
+    private string _password { get; set; } = string.Empty;
 
 
     private async Task OnLoginSubmit()
     {
         _isLoading = true;
 
+        var loginRequest = new LoginRequestDto() { Username = _username, Password = _password };
 
-
-        if (string.IsNullOrEmpty(UserDto.Username) || string.IsNullOrEmpty(UserDto.Password))
+        if (string.IsNullOrEmpty(loginRequest.Username) || string.IsNullOrEmpty(loginRequest.Password))
         {
             _errorMessage = "Must provide values for Username and Password";
             _isLoading = false;
             return;
-        } 
+        }
 
-        var result = await _userApiService.GetUserByUsernameAsync(UserDto.Username);
+        var token = await _userApiService.AuthenticateUserAsync(loginRequest);
 
-        if (result.Username is null || result.Password != UserDto.Password)
+        if (string.IsNullOrEmpty(token))
         {
             _errorMessage = "Wrong Username or Password";
             _toastService.ShowError("Login failed");
 
-            UserDto = new();
+            _username = string.Empty;
+            _password = string.Empty;
         }
         else
         {
-            // await _authService.SetTokenAsync(token);
+            await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "authToken", token);
 
             _isLoading = false;
-            // Show toaster of success ??
             _toastService.ShowSuccess("Login successful");
             _navigationManager.NavigateTo("..");
-
         }
 
         _isLoading = false;
