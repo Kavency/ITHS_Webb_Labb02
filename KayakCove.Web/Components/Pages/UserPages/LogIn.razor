@@ -1,0 +1,112 @@
+﻿@page "/login"
+@rendermode InteractiveServer
+@using KayakCove.Application.DTOs
+@using KayakCove.Domain.Entities
+@using KayakCove.Web.ApiServices
+@using KayakCove.Web.Components.Layout
+@using Microsoft.AspNetCore.Identity.Data
+@inject NavigationManager _navigationManager
+@inject AuthenticationService _authService
+@inject UserApiService _userApiService
+@inject LoginStateService _loginState
+@inject IToastService _toastService
+@inject HttpClient _httpClient
+@inject IJSRuntime _jsRuntime
+
+<div class="container">
+    <div class="card shadow border-0 mt-4">
+        <div class="card-header bg-black bg-gradient ml-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2">Login</h2>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <EditForm Model="_username" FormName="LoginForm" OnValidSubmit="OnLoginSubmit">
+                <DataAnnotationsValidator />
+                <div class="border p-3 mt-4">
+                    <div class="form-floating py-3 col-12">
+                        <InputText @bind-Value="_username" class="form-control" id="Username" placeholder="Username" />
+                        <label for="Username">Username</label>
+                    </div>
+                    <div class="form-floating py-3 col-12">
+                        <InputText @bind-Value="_password" type="password" class="form-control" id="Password" placeholder="Password" />
+                        <label for="Password">Password</label>
+                    </div>
+                    <div class="row mt-3 justify-content-center">
+                        <span class="text-danger text-center mb-3">@_errorMessage</span>
+                        <div class="col-6 col-md-3">
+                            <button type="submit" @onclick="OnLoginSubmit" class="btn btn-success form-control" disabled="@_isLoading">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </button>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <button @onclick="OnLoginCancel" class="btn btn-danger form-control" disabled="@_isLoading">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool _isLoading { get; set; } = false;
+    private string _errorMessage { get; set; } = string.Empty;
+    private string _username { get; set; } = string.Empty;
+    private string _password { get; set; } = string.Empty;
+
+    private async Task OnLoginSubmit()
+    {
+        _isLoading = true;
+
+        var loginRequest = new LoginRequestDto() { Username = _username, Password = _password };
+
+        if (string.IsNullOrEmpty(loginRequest.Username) || string.IsNullOrEmpty(loginRequest.Password))
+        {
+            _errorMessage = "Must provide values for Username and Password";
+            _isLoading = false;
+            return;
+        }
+
+        var token = await _userApiService.AuthenticateUserAsync(loginRequest);
+
+        if (string.IsNullOrEmpty(token))
+        {
+            _errorMessage = "Wrong Username or Password";
+            _toastService.ShowError("Login failed");
+
+            _username = string.Empty;
+            _password = string.Empty;
+        }
+        else
+        {
+            await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "authToken", token);
+
+            var role = await _authService.GetRoleAsync();
+
+            if (role == "Admin")
+            {
+                _loginState.UpdateAdminLoginState(true);
+            }
+            else
+            {
+                _loginState.UpdateUserLoginState(true);
+            }
+            StateHasChanged();
+            _isLoading = false;
+            _toastService.ShowSuccess("Login successful");
+            _navigationManager.NavigateTo("..");
+        }
+
+        _isLoading = false;
+    }
+
+    private void OnLoginCancel()
+    {
+        _navigationManager.NavigateTo("..");
+    }
+}
