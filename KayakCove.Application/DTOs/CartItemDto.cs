@@ -1,6 +1,6 @@
 ﻿namespace KayakCove.Application.DTOs;
 
-class CartItemDto
+public class CartItemDto
 {
     public int UserId { get; set; }
     public int ProductId { get; set; }
