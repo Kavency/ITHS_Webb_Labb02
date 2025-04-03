@@ -9,6 +9,7 @@ class OrderRepository(ApplicationDbContext context) : IOrderRepository
 {
     private readonly ApplicationDbContext _context = context;
 
+
     /// <summary>
     /// Fetch all orders from database.
     /// </summary>
@@ -17,6 +18,7 @@ class OrderRepository(ApplicationDbContext context) : IOrderRepository
     {
         return await _context.Orders.ToListAsync();
     }
+
 
     /// <summary>
     /// Fetches a single order based on Id.
@@ -28,35 +30,36 @@ class OrderRepository(ApplicationDbContext context) : IOrderRepository
         return await _context.Orders.FindAsync(id);
     }
 
+
     /// <summary>
     /// Add a new order to the database.
     /// </summary>
     /// <param name="order">Order object representing the new order.</param>
-    /// <returns>The order object that was added.</returns>
-    public async Task<Order> CreateOrderAsync(Order order)
+    /// <returns>Returns true for success otherwise false.</returns>
+    public async Task<bool> CreateOrderAsync(Order order)
     {
         await _context.Orders.AddAsync(order);
-        await _context.SaveChangesAsync();
-        return order;
+        return HandleResult(await _context.SaveChangesAsync());
     }
     
+
     /// <summary>
     /// Insert an update order object to the database.
     /// </summary>
-    /// <param name="order">Order object that should be updated. </param>
-    /// <returns>The order object that was updated.</returns>
-    public async Task<Order> UpdateOrderAsync(Order order)
+    /// <param name="order">Order object that should be updated.</param>
+    /// <returns>Returns true for success otherwise false.</returns>
+    public async Task<bool> UpdateOrderAsync(Order order)
     {
         _context.Orders.Update(order);
-        await _context.SaveChangesAsync();
-        return order;
+        return HandleResult(await _context.SaveChangesAsync());
     }
+
 
     /// <summary>
     /// Delete an order based on Id.
     /// </summary>
     /// <param name="id">Integer representing the order id.</param>
-    /// <returns>True if successful otherwise false.</returns>
+    /// <returns>True for success otherwise false.</returns>
     public async Task<bool> DeleteOrderAsync(int id)
     {
         var orderToDelete = await _context.Orders.FindAsync(id);
