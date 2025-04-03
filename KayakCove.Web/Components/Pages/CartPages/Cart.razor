@@ -1,91 +1,190 @@
 ﻿@page "/cart"
+@rendermode InteractiveServer
+@using KayakCove.Application.DTOs
+@using KayakCove.Web.ApiServices
+@inject Blazored.LocalStorage.ILocalStorageService _localStorage
 
-<div class="row w-100">
-	<div class="col-lg-6 col-12">
-		<div class="container p-4 m-2">
-			<h4 class="text-center text-success display-6">
-				Cart Summary
-			</h4>
-			<div class="d-flex p-2 m-2">
-				<div class="card flex-row w-100">
-					<img class="card-img-left" style="width: 120px;">
-					<div class="card-body">
-						<div class="d-flex justify-content-between align-items-center">
-							<h4 class="">
-								--ProductName--
+
+<PageTitle>Shopping Cart</PageTitle>
+
+@if (_isLoading)
+{
+	<div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+		<img src="images/loading.gif" alt="Loading data" />
+	</div>
+}
+else
+{
+	<div class="row w-100">
+		<div class="col-lg-6 col-12">
+			<div class="container p-4 m-2">
+				<h4 class="text-center text-success display-6">
+					Cart Summary
+				</h4>
+				<div class="d-flex p-2 m-2">
+					<div class="card flex-row w-100">
+						<img class="card-img-left" style="width: 120px;">
+						<div class="card-body">
+							@foreach(var item in CartItems)
+							{
+								<div class="d-flex justify-content-between align-items-center">
+									<h4 class="">
+										@item.ProductDto.Name
+									</h4>
+									<h4>
+										$@item.ProductDto.Price
+									</h4>
+								</div>
+								<div class="flex-fill">
+									<h4 class="text-danger">
+										Total: $@(item.Amount * item.ProductDto.Price)
+									</h4>
+								</div>
+								<div class="d-flex justify-content-between align-items-center">
+									<div class="d-flex justify-content-between g-0">
+										<span>
+											<i class="bi bi-dash-circle-fill btn text-secondary" @onclick="() => DecreaseAmount(item)"></i>
+										</span>
+										<span class="ml-1 me-1">
+											<b class="lead">@item.Amount</b>
+										</span>
+										<span>
+											<i class="bi bi-plus-circle-fill btn text-secondary" @onclick="() => IncreaseAmount(item)"></i>
+										</span>
+									</div>
+									<button class="btn btn-danger" @onclick="() => RemoveItemFromCart(item)">Remove</button>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class="col-lg-6 col-12 p-4">
+			<div class="card">
+				<div class="card-header text-success text-center display-6">
+					Pickup Details
+				</div>
+				<div class="card-body">
+					<form>
+						<div class="form-group">
+							<label>Name</label>
+							<input type="text" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label>Email</label>
+							<input type="text" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label>Phone</label>
+							<input type="text" class="form-control" />
+						</div>
+
+					</form>
+					<div class="card mt-4 bg-light">
+						<div class="card-body">
+							<h4>
+								Grand Total: $@_totalValueOfCart
 							</h4>
 							<h4>
-								--PRICE--
+								No. of Items: @_totalNumberOfItems
 							</h4>
 						</div>
-						<div class="flex-fill">
-							<h4 class="text-danger">
-								--COUNT*PRICE--
-							</h4>
-						</div>
-						<div class="d-flex justify-content-between align-items-center">
-							<div class="d-flex justify-content-between g-0">
-								<span>
-									<i class="bi bi-dash-circle-fill btn text-secondary"></i>
-								</span>
-								<span class="ml-1 me-1">
-									<b class="lead">--Count--</b>
-								</span>
-								<span>
-									<i class="bi bi-plus-circle-fill btn text-secondary"></i>
-								</span>
-							</div>
-							<button class="btn btn-danger">Remove</button>
-						</div>
+
 					</div>
 				</div>
-			</div>
 
+				<button class="btn btn-success m-4">Place Order!</button>
+			</div>
 		</div>
 	</div>
-	<div class="col-lg-6 col-12 p-4">
-		<div class="card">
-			<div class="card-header text-success text-center display-6">
-				Pickup Details
-			</div>
-			<div class="card-body">
-				<form>
-					<div class="form-group">
-						<label>Name</label>
-						<input type="text" class="form-control" />
-					</div>
-					<div class="form-group">
-						<label>Email</label>
-						<input type="text" class="form-control" />
-					</div>
-					<div class="form-group">
-						<label>Phone</label>
-						<input type="text" class="form-control" />
-					</div>
-
-				</form>
-				<div class="card mt-4 bg-light">
-					<div class="card-body">
-						<h4>
-							Grand Total: --$$--
-						</h4>
-						<h4>
-							No. of Items: --COUNT--
-						</h4>
-					</div>
-
-				</div>
-			</div>
-
-			<button class="btn btn-success m-4">
-				Looks Good? Place Order!
-			</button>
-		</div>
-	</div>
-</div>
-
+}
 
 
 @code {
+	private bool _isLoading { get; set; } = true;
+	private decimal _totalValueOfCart { get; set; }
+	private int _totalNumberOfItems { get; set; }
 
+	public ICollection<CartItemDto> CartItems { get; set; } = new List<CartItemDto>();
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await LoadCartItems();
+			_isLoading = false;
+			StateHasChanged();
+		}
+	} 
+
+	private async Task LoadCartItems()
+	{
+		CartItems = await _localStorage.GetItemAsync<List<CartItemDto>>("cart");
+		await CalculateSumsInCart();
+	}
+
+	private async Task CalculateSumsInCart()
+	{
+		_totalNumberOfItems = 0;
+		_totalValueOfCart = 0;
+
+		foreach(var item in CartItems)
+		{
+			_totalNumberOfItems += item.Amount;
+			_totalValueOfCart += item.ProductDto.Price * item.Amount;
+		}
+	}
+
+	private async Task IncreaseAmount(CartItemDto cartItem)
+	{
+		foreach (var item in CartItems)
+		{
+			if (item.ProductId == cartItem.ProductId)
+			{
+				item.Amount++;
+			}
+		}
+		await CalculateSumsInCart();
+		await UpdateLocalStorage();
+	}
+
+	private async Task DecreaseAmount(CartItemDto cartItem)
+	{
+		foreach (var item in CartItems)
+		{
+			if (item.ProductId == cartItem.ProductId)
+			{
+				item.Amount--;
+
+				if(item.Amount <= 0)
+				{
+					CartItems.Remove(item);
+					break;
+				}
+			}
+		}
+		await CalculateSumsInCart();
+		await UpdateLocalStorage();
+	}
+
+	private async Task RemoveItemFromCart(CartItemDto cartItem)
+	{
+		foreach (var item in CartItems)
+		{
+			if (item.ProductId == cartItem.ProductId)
+			{
+				CartItems.Remove(item);
+				break;
+			}
+		}
+		await CalculateSumsInCart();
+		await UpdateLocalStorage();
+	}
+
+	private async Task UpdateLocalStorage()
+	{
+		await _localStorage.SetItemAsync("cart", CartItems);
+	}
 }
