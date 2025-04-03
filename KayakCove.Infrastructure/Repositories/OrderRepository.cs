@@ -66,4 +66,16 @@ class OrderRepository(ApplicationDbContext context) : IOrderRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+
+    /// <summary>
+    /// Helper method for handling DBContext results.
+    /// </summary>
+    /// <param name="result">Integer representing the result.</param>
+    /// <returns>True for success otherwise false.</returns>
+    private bool HandleResult(int result)
+    {
+        if (result > 0) return true;
+        else return false;
+    }
 }
