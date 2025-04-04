@@ -3,14 +3,18 @@ using System.Text.Json;
 
 namespace KayakCove.Web.ApiServices;
 
-public class UserApiService
+public class UserApiService(IHttpClientFactory httpClient)
 {
-    private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient = httpClient.CreateClient("ApiClient");
 
-    public UserApiService(IHttpClientFactory httpClient)
+
+    public async Task<TokenResponseDto> AuthenticateUserAsync(LoginRequestDto loginRequest)
     {
-        this._httpClient = httpClient.CreateClient("ApiClient");
+            var response = await _httpClient.PostAsJsonAsync("authenticate/login", loginRequest);
+            var responseData = await response.Content.ReadFromJsonAsync<TokenResponseDto>();
+            return responseData;
     }
+
 
     public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
     {
@@ -18,19 +22,11 @@ public class UserApiService
     }
 
 
-
-    public async Task<string> AuthenticateUserAsync(LoginRequestDto loginRequest)
-    {
-            var response = await _httpClient.PostAsJsonAsync("authenticate/login", loginRequest);
-            var responseData = await response.Content.ReadFromJsonAsync<TokenResponseDto>();
-            var token = responseData.Token;
-            return token;
-    }
-
     public async Task<UserDto> GetUserByIdAsync(int id)
     {
         return await _httpClient.GetFromJsonAsync<UserDto>($"user/{id}");
     }
+
 
     public async Task<UserDto> CreateUserAsync(UserDto dto)
     {
@@ -41,6 +37,7 @@ public class UserApiService
         return userDto;
     }
 
+
     public async Task<bool> UpdateUserAsync(int id, UserDto dto)
     {
         var response = await _httpClient.PutAsJsonAsync($"user/{id}", dto);
@@ -49,6 +46,7 @@ public class UserApiService
         else
             return false;
     }
+
 
     public async Task<bool> DeleteUserAsync(int id)
     {
