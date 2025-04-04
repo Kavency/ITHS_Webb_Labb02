@@ -72,9 +72,9 @@
             return;
         }
 
-        var token = await _userApiService.AuthenticateUserAsync(loginRequest);
+        var tokenResponseDto = await _userApiService.AuthenticateUserAsync(loginRequest);
 
-        if (string.IsNullOrEmpty(token))
+        if (tokenResponseDto is null)
         {
             _errorMessage = "Wrong Username or Password";
             _toastService.ShowError("Login failed");
@@ -84,7 +84,7 @@
         }
         else
         {
-            await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "authToken", token);
+            await _jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "authToken", tokenResponseDto.Token);
 
             var role = await _authService.GetRoleAsync();
 
@@ -96,6 +96,9 @@
             {
                 _loginState.UpdateUserLoginState(true);
             }
+
+            _loginState.SetUser(tokenResponseDto.UserDto);
+
             StateHasChanged();
             _isLoading = false;
             _toastService.ShowSuccess("Login successful");

@@ -1,4 +1,5 @@
 ﻿using KayakCove.Application.DTOs;
+using KayakCove.Domain.Entities;
 
 namespace KayakCove.Web.ApiServices
 {
@@ -6,7 +7,7 @@ namespace KayakCove.Web.ApiServices
     {
         public bool IsAdminLoggedIn { get; private set; }
         public bool IsLoggedIn { get; private set; }
-        public UserDto UserDto { get; set; }
+        public UserDto UserDto { get; set; } = new UserDto { Role = new Role() };
 
         public event Action OnChange;
 
@@ -27,6 +28,7 @@ namespace KayakCove.Web.ApiServices
         public void SetUser(UserDto userDto)
         {
             UserDto = userDto;
+            NotifyStateChanged();
         }
 
         private void NotifyStateChanged() => OnChange?.Invoke();

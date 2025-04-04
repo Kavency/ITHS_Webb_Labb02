@@ -3,7 +3,8 @@
 @inject LoginStateService _loginState
 @inject IJSRuntime _jsRuntime
 
-
+@if (_loginState.IsLoggedIn && !_loginState.IsAdminLoggedIn || !_loginState.IsLoggedIn)
+{
 <nav class="navbar navbar-expand-md navbar-dark bg-dark pb-1 pt-1">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="">
@@ -33,7 +34,7 @@
 				{
 					<li class="nav-item">
 						<button class="nav-link active me-2" style="cursor: pointer; background: transparent; border: 0px;">
-							Welcome, --Name--
+							Welcome, @Username
 						</button>
 					</li>
 				}
@@ -65,15 +66,24 @@
 		</div>
 	</div>
 </nav>
-
+}
 @code {
+	public string Username { get; set; } = string.Empty;
+
 	protected override void OnInitialized()
 	{
-		// if the OnChange event is raised, refresh this view
 		_loginState.OnChange += () => StateHasChanged();
+
+
 
 		base.OnInitialized();
 	}
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		Username = _loginState.UserDto.Username;
+	}	
+
 
 	private async Task Logout()
 	{

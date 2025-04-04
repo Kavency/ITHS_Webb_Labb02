@@ -29,7 +29,27 @@ namespace KayakCove.Api.Controllers
             {
                 // Generate JWT
                 var token = GenerateJwtToken(result.Username, result.Role.Title);
-                return Ok(new { token });
+                return Ok(new 
+                { 
+                    token,
+                    userDto = new UserDto
+                    {
+                        Id = result.Id,
+                        Username = result.Username,
+                        Password = result.Password,
+                        Firstname = result.Firstname,
+                        Lastname = result.Lastname,
+                        Email = result.Email,
+                        Phonenumber = result.Phonenumber,
+                        Streetaddress = result.Streetaddress,
+                        Postalcode = result.Postalcode,
+                        City = result.City,
+                        Country = result.Country,
+                        RoleId = result.RoleId,
+                        Role = result.Role
+                    }
+
+                });
             }
             else
             {
