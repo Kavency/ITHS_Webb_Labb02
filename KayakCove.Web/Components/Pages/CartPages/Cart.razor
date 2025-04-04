@@ -4,6 +4,7 @@
 @using KayakCove.Web.ApiServices
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
 @inject OrderApiService _orderApiService
+@inject OrderDetailsApiService _orderDetailsApiService
 @inject LoginStateService _loginState
 
 <PageTitle>Shopping Cart</PageTitle>
@@ -112,6 +113,7 @@ else
 
 	public ICollection<CartItemDto> CartItems { get; set; } = new List<CartItemDto>();
 
+
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
@@ -122,11 +124,13 @@ else
 		}
 	} 
 
+
 	private async Task LoadCartItems()
 	{
 		CartItems = await _localStorage.GetItemAsync<List<CartItemDto>>("cart");
 		await CalculateSumsInCart();
 	}
+
 
 	private async Task CalculateSumsInCart()
 	{
@@ -140,6 +144,7 @@ else
 		}
 	}
 
+
 	private async Task IncreaseAmount(CartItemDto cartItem)
 	{
 		foreach (var item in CartItems)
@@ -152,6 +157,7 @@ else
 		await CalculateSumsInCart();
 		await UpdateLocalStorage();
 	}
+
 
 	private async Task DecreaseAmount(CartItemDto cartItem)
 	{
@@ -172,6 +178,7 @@ else
 		await UpdateLocalStorage();
 	}
 
+
 	private async Task RemoveItemFromCart(CartItemDto cartItem)
 	{
 		foreach (var item in CartItems)
@@ -186,6 +193,7 @@ else
 		await UpdateLocalStorage();
 	}
 
+
 	private async Task UpdateLocalStorage()
 	{
 		await _localStorage.SetItemAsync("cart", CartItems);
@@ -196,11 +204,27 @@ else
 	{
 		OrderDto orderDto = new OrderDto { Id = 0, UserId = 1, GrandTotal = _totalValueOfCart, OrderDate = DateTime.Now, OrderStatus = "Pending" };
 		var result = await _orderApiService.CreateOrderAsync(orderDto);
-		// if result is true, call OrderDetails to add all cart items to DB.
+		
+		if (result is not null)
+		{
+			foreach(var item in CartItems)
+			{
+				OrderDetailsDto orderDetailsDto = new OrderDetailsDto
+					{
+						Id = 0,
+						OrderId = result.Id,
+						ProductId = item.ProductId,
+						Quantity = item.Amount,
+						UnitPrice = item.ProductDto.Price
+					};
 
-		CartItems.Clear();
-		await CalculateSumsInCart();
-		await UpdateLocalStorage();
-		StateHasChanged();
+				await _orderDetailsApiService.CreateOrderDetailsAsync(orderDetailsDto);
+			}
+			
+			CartItems.Clear();
+			await CalculateSumsInCart();
+			await UpdateLocalStorage();
+			StateHasChanged();
+		}
 	}
 }
