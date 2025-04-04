@@ -4,9 +4,9 @@ namespace KayakCove.Infrastructure.Interfaces;
 
 public interface IOrderDetailsRepository
 {
-    Task<IEnumerable<OrderDetails>> GetAllOrdersAsync();
-    Task<OrderDetails> GetOrderByIdAsync(int id);
-    Task<bool> CreateOrderAsync(OrderDetails orderDetails);
-    Task<bool> UpdateOrderAsync(OrderDetails orderDetails);
-    Task<bool> DeleteOrderAsync(int id);
+    Task<IEnumerable<OrderDetails>> GetAllOrderDetailsAsync();
+    Task<OrderDetails> GetOrderDetailsByIdAsync(int id);
+    Task<OrderDetails> CreateOrderDetailsAsync(OrderDetails orderDetails);
+    Task<bool> UpdateOrderDetailsAsync(OrderDetails orderDetails);
+    Task<bool> DeleteOrderDetailsAsync(int id);
 }
