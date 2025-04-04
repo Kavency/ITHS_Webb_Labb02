@@ -13,9 +13,9 @@
 ##
 # Products API
 version: 1.0.0
+#### [Back to index](#Available-APIs)
 
-API for managing product data.
-
+### API for managing product data.
 ### GET: Retrieve all products.
 ```YAML
 /api/Products
@@ -130,8 +130,8 @@ responses:
 ##
 # Category API
 version: 1.0.0
-
-API for managing category data.
+#### [Back to index](#Available-APIs)
+### API for managing category data.
 
 ### GET: Retrieve all categories.
 ```YAML
@@ -227,9 +227,9 @@ responses:
 ##
 # Role API
 version: 1.0.0
+#### [Back to index](#Available-APIs)
 
-API for managing user role data.
-
+### API for managing user role data.
 ### GET: Retrieve all roles.
 ```YAML
 /api/Role
@@ -259,9 +259,9 @@ responses:
 ##
 # User API
 version: 1.0.0
+#### [Back to index](#Available-APIs)
 
-API for managing user data.
-
+### API for managing user data.
 ### GET: Retrieve all users.
 ```YAML
 /api/User
@@ -392,9 +392,8 @@ responses:
 ##
 # Order API
 version: 1.0.0
-
-API for managing order data.
-
+#### [Back to index](#Available-APIs)
+### API for managing order data.
 ### GET: Retrieve all orders.
 ```YAML
 /api/Order
@@ -501,9 +500,8 @@ responses:
 ##
 # Order Details API
 version: 1.0.0
-
-API for managing order detail data.
-
+#### [Back to index](#Available-APIs)
+### API for managing order detail data.
 ### GET: Retrieve all orderdetails.
 ```YAML
 /api/OrderDetails
@@ -610,9 +608,8 @@ responses:
 ##
 # Authenticate API
 version: 1.0.0
-
-API for authenticating user.
-
+#### [Back to index](#Available-APIs)
+### API for authenticating user.
 ### POST: Authenticate user and receive a token.
 ```YAML
 /api/Authenticate/login
