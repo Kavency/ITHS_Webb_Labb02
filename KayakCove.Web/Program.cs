@@ -18,6 +18,12 @@ builder.Services.AddScoped<CategoryApiService>();
 builder.Services.AddScoped<ProductApiService>();
 builder.Services.AddScoped<RoleApiService>();
 builder.Services.AddScoped<UserApiService>();
+builder.Services.AddScoped<OrderApiService>();
+
+builder.Services.AddHttpClient("ApiClient", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7247/api/");
+});
 
 var app = builder.Build();
 

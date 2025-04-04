@@ -1,6 +1,4 @@
-﻿using Azure;
-using KayakCove.Application.DTOs;
-using System.Net.Http.Json;
+﻿using KayakCove.Application.DTOs;
 using System.Text;
 using System.Text.Json;
 
@@ -12,8 +10,7 @@ public class ProductApiService
 
     public ProductApiService(IHttpClientFactory httpClient)
     {
-        this._httpClient = httpClient.CreateClient("apiClient");
-        _httpClient.BaseAddress = new Uri("https://localhost:7247/api/");
+        this._httpClient = httpClient.CreateClient("ApiClient");
     }
 
     public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()

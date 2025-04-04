@@ -9,8 +9,7 @@ public class UserApiService
 
     public UserApiService(IHttpClientFactory httpClient)
     {
-        this._httpClient = httpClient.CreateClient("apiClient");
-        _httpClient.BaseAddress = new Uri("https://localhost:7247/api/");
+        this._httpClient = httpClient.CreateClient("ApiClient");
     }
 
     public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
