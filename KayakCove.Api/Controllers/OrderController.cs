@@ -40,12 +40,12 @@ namespace KayakCove.Api.Controllers
         /// Create a new order.
         /// </summary>
         /// <param name="orderDto">The OrderDto object to be created.</param>
-        /// <returns>201 created with the newly created object.</returns>
+        /// <returns>Status Ok 200 with the newly created object.</returns>
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody]OrderDto orderDto)
         {
-            await _orderService.CreateOrderAsync(orderDto);
-            return CreatedAtAction(nameof(GetOrderById), new { id = orderDto.Id, orderDto });
+            var newOrderDto = await _orderService.CreateOrderAsync(orderDto);
+            return Ok(newOrderDto);
         }
 
 
