@@ -4,7 +4,7 @@ using KayakCove.Application.DTOs;
 
 namespace KayakCove.Application.Services;
 
-class OrderService(IOrderRepository orderRepository)
+public class OrderService(IOrderRepository orderRepository)
 {
     private readonly IOrderRepository _orderRepository = orderRepository;
 
