@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KayakCove.Infrastructure.Repositories;
 
-class OrderRepository(ApplicationDbContext context) : IOrderRepository
+public class OrderRepository(ApplicationDbContext context) : IOrderRepository
 {
     private readonly ApplicationDbContext _context = context;
 
