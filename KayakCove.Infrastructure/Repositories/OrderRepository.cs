@@ -35,7 +35,7 @@ public class OrderRepository(ApplicationDbContext context) : IOrderRepository
     /// Add a new order to the database.
     /// </summary>
     /// <param name="order">Order object representing the new order.</param>
-    /// <returns>Returns true for success otherwise false.</returns>
+    /// <returns>Order object created.</returns>
     public async Task<Order> CreateOrderAsync(Order order)
     {
         await _context.Orders.AddAsync(order);
@@ -52,7 +52,9 @@ public class OrderRepository(ApplicationDbContext context) : IOrderRepository
     public async Task<bool> UpdateOrderAsync(Order order)
     {
         _context.Orders.Update(order);
-        return HandleResult(await _context.SaveChangesAsync());
+        var result = await _context.SaveChangesAsync();
+        if (result > 0) return true;
+        else return false;
     }
 
 
@@ -69,17 +71,5 @@ public class OrderRepository(ApplicationDbContext context) : IOrderRepository
         _context.Orders.Remove(orderToDelete);
         await _context.SaveChangesAsync();
         return true;
-    }
-
-
-    /// <summary>
-    /// Helper method for handling DBContext results.
-    /// </summary>
-    /// <param name="result">Integer representing the result.</param>
-    /// <returns>True for success otherwise false.</returns>
-    private bool HandleResult(int result)
-    {
-        if (result > 0) return true;
-        else return false;
     }
 }
