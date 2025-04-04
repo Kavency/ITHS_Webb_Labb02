@@ -7,10 +7,9 @@
     <NavMenu />
 
     <main>
-        @if (_loginState.IsLoggedIn && !_loginState.IsAdminLoggedIn || !_loginState.IsLoggedIn)
-        {
-            <NavBar />
-        }
+        
+        <NavBar />
+
         @Body
     </main>
 </div>
