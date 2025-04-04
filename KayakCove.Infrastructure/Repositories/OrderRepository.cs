@@ -36,10 +36,11 @@ public class OrderRepository(ApplicationDbContext context) : IOrderRepository
     /// </summary>
     /// <param name="order">Order object representing the new order.</param>
     /// <returns>Returns true for success otherwise false.</returns>
-    public async Task<bool> CreateOrderAsync(Order order)
+    public async Task<Order> CreateOrderAsync(Order order)
     {
         await _context.Orders.AddAsync(order);
-        return HandleResult(await _context.SaveChangesAsync());
+        await _context.SaveChangesAsync();
+        return order;
     }
     
 

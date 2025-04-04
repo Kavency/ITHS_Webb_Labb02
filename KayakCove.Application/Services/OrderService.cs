@@ -37,11 +37,12 @@ public class OrderService(IOrderRepository orderRepository)
     /// </summary>
     /// <param name="orderDto">Dto to be converted.</param>
     /// <returns>Returns true for success otherwise false.</returns>
-    public async Task<bool> CreateOrderAsync(OrderDto orderDto)
+    public async Task<OrderDto> CreateOrderAsync(OrderDto orderDto)
     {
         var order = EntityAndDtoConvertion(orderDto) as Order;
         var result = await _orderRepository.CreateOrderAsync(order);
-        return result;
+        var newOrderDto = EntityAndDtoConvertion(order) as OrderDto;
+        return newOrderDto;
     }
 
 

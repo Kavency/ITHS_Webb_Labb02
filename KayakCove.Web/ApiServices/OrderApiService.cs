@@ -25,7 +25,7 @@ public class OrderApiService(IHttpClientFactory httpClient)
     /// </summary>
     /// <param name="id">Integer representing the order id.</param>
     /// <returns>OrderDto object.</returns>
-    public async Task<OrderDto> GetCategoryByIdAsync(int id)
+    public async Task<OrderDto> GetOrderByIdAsync(int id)
     {
         var response = await _httpClient.GetFromJsonAsync<OrderDto>($"order/{id}");
         return response;
@@ -36,13 +36,12 @@ public class OrderApiService(IHttpClientFactory httpClient)
     /// Calls the API CreateOrder.
     /// </summary>
     /// <param name="orderDto">The object to be created.</param>
-    /// <returns>The creaded OrderDto object.</returns>
-    public async Task<OrderDto> CreateCategoryAsync(OrderDto orderDto)
+    /// <returns>The newly created object.</returns>
+    public async Task<OrderDto> CreateOrderAsync(OrderDto orderDto)
     {
         var response = await _httpClient.PostAsJsonAsync("order", orderDto);
-        response.EnsureSuccessStatusCode();
-        var createdOrder = await response.Content.ReadFromJsonAsync<OrderDto>();
-        return createdOrder;
+        var newOrderDto = await response. Content.ReadFromJsonAsync<OrderDto>();
+        return newOrderDto;
     }
 
 
