@@ -1,6 +1,6 @@
 ﻿namespace KayakCove.Application.DTOs;
 
-class OrderDetailsDto
+public class OrderDetailsDto
 {
     public int Id { get; set; }
     public int OrderId { get; set; }
