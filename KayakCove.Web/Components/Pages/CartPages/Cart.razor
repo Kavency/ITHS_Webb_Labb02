@@ -3,7 +3,8 @@
 @using KayakCove.Application.DTOs
 @using KayakCove.Web.ApiServices
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
-
+@inject OrderApiService _orderApiService
+@inject LoginStateService _loginState
 
 <PageTitle>Shopping Cart</PageTitle>
 
@@ -95,7 +96,9 @@ else
 					</div>
 				</div>
 
-				<button class="btn btn-success m-4">Place Order!</button>
+				<button class="btn btn-success m-4" @onclick="OnPlaceOrderClicked" disabled="@(CartItems.Count <= 0)">
+					@(_loginState.IsLoggedIn? "Place Order!" : "Log in to place order!")
+				</button>
 			</div>
 		</div>
 	</div>
@@ -186,5 +189,18 @@ else
 	private async Task UpdateLocalStorage()
 	{
 		await _localStorage.SetItemAsync("cart", CartItems);
+	}
+
+
+	private async Task OnPlaceOrderClicked()
+	{
+		OrderDto orderDto = new OrderDto { Id = 0, UserId = 1, GrandTotal = _totalValueOfCart, OrderDate = DateTime.Now, OrderStatus = "Pending" };
+		var result = await _orderApiService.CreateOrderAsync(orderDto);
+		// if result is true, call OrderDetails to add all cart items to DB.
+
+		CartItems.Clear();
+		await CalculateSumsInCart();
+		await UpdateLocalStorage();
+		StateHasChanged();
 	}
 }
