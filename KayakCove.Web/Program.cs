@@ -19,6 +19,7 @@ builder.Services.AddScoped<ProductApiService>();
 builder.Services.AddScoped<RoleApiService>();
 builder.Services.AddScoped<UserApiService>();
 builder.Services.AddScoped<OrderApiService>();
+builder.Services.AddScoped<OrderDetailsApiService>();
 
 builder.Services.AddHttpClient("ApiClient", client =>
 {
