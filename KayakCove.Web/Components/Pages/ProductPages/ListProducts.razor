@@ -5,6 +5,7 @@
 @using KayakCove.Web.ApiServices
 @using KayakCove.Web.Components.Shared
 @inject ProductApiService _productApiService
+@inject CategoryApiService _categoryApiService
 @inject NavigationManager Navigation
 @inject IJSRuntime _js
 @inject IWebHostEnvironment _webHostEnvironment
@@ -28,14 +29,40 @@ else
                         <h2 class="text-white py-2">Products</h2>
                     </div>
                 </div>
+                <div class="d-flex align-items-center" style="width: 100%;">
+                    <input type="text" class="form-control rounded-pill"
+                    placeholder="Search"
+                    style="width: 100%; padding-top: 5px; padding-bottom: 5px; padding-left: 25px;"
+                    @bind:event="oninput" @bind:get="_searchText" @bind:set="FilterProductsByName">
+                    <span style="position: relative; left: -40px;"><i class="bi bi-search"></i></span>
+                </div>
             </div>
             <div class="card-body p-4">
                 <div class="row pb-3">
+                    <EditForm class="row my-2 justify-content-center" FormName="FilterCategoryForm" Model="_filteredCategoryId">
+                        <div class="col-1 align-content-center text-end">Filter on:</div>
+                        <div class="col-2">
+                            <InputSelect class="form-select col-4" @bind-Value="@_filteredCategoryId" id="Category" placeholder="Category">
+                                <option value="0">All</option>
+                                @foreach (var item in Categories)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <button class="col-1 btn btn-primary" @onclick="FilterProductsByCategory">Apply filter</button>
+                    </EditForm>
                     <div class="col-12 text-end">
                         <button class="btn btn-lg btn-success" @onclick="NavigateToCreateProductPage"><i class="bi bi-plus-square"></i> Add product</button>
                     </div>
                 </div>
-                @if (Products.Any())
+                @if (FilteredProducts.Count() == 0 || FilteredProducts is null)
+                {
+                    <div class="row m-5 text-center">
+                        <p class="text-danger">Could not find any items matching the filter. <a href="/products" @onclick="ClearFilter">Clear filter</a></p>
+                    </div>
+                }
+                else
                 {
                     <table class="table table-striped">
                         <thead>
@@ -51,7 +78,7 @@ else
                         </thead>
 
                         <tbody>
-                            @foreach (var item in Products)
+                            @foreach (var item in FilteredProducts)
                             {
                                 <tr>
                                     <td>@item.Id</td>
@@ -77,17 +104,30 @@ else
 @code {
     private bool _isLoading { get; set; } = true;
     private int _deleteProductId { get; set; }
+    private int _filteredCategoryId { get; set; } = 0;
+    private string _searchText { get; set; } = string.Empty;
     public IEnumerable<ProductDto> Products;
+    public IEnumerable<ProductDto> FilteredProducts { get; set; } = new List<ProductDto>();
+    public IEnumerable<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
-        {
-            Products = await _productApiService.GetAllProductsAsync();
-            _isLoading = false;
-            StateHasChanged();
-        }
+        Products = await _productApiService.GetAllProductsAsync();
+        Categories = await _categoryApiService.GetAllCategoriesAsync();
+        FilterProductsByCategory();
+        _isLoading = false;
+        
     }
+
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         StateHasChanged();
+    //     }
+    // }
 
     private void NavigateToCreateProductPage()
     {
@@ -140,4 +180,40 @@ else
         }
     }
 
+    private void FilterProductsByName(string searchTextEntered)
+    {
+        _filteredCategoryId = 0;
+
+        if (string.IsNullOrWhiteSpace(searchTextEntered))
+        {
+            FilteredProducts = Products;
+        }
+        else
+        {
+            FilteredProducts = Products.Where(x => x.Name.Contains(searchTextEntered, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        }
+
+        _searchText = searchTextEntered;
+    }
+
+    private void FilterProductsByCategory()
+    {
+        if (_filteredCategoryId == 0)
+        {
+            FilteredProducts = Products;
+        }
+        else
+        {
+            FilteredProducts = Products.Where(p => p.CategoryId == _filteredCategoryId).ToList();
+        }
+
+        _searchText = string.Empty;
+    }
+
+    private void ClearFilter()
+    {
+        _filteredCategoryId = 0;
+        _searchText = string.Empty;
+        FilterProductsByCategory();
+    }
 }

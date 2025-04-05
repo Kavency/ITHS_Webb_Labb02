@@ -171,8 +171,7 @@ else
             }
         }
 
-        // Fetch UserId
-        CartItemDto itemDto = new() { UserId = 2, ProductId = product.Id, ProductDto = product, Amount = 1 };
+        CartItemDto itemDto = new() { ProductId = product.Id, ProductDto = product, Amount = 1 };
         CartItems.Add(itemDto);
         await UpdateLocalStorage();
     }

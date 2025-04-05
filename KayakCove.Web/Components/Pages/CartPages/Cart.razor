@@ -202,7 +202,7 @@ else
 
 	private async Task OnPlaceOrderClicked()
 	{
-		OrderDto orderDto = new OrderDto { Id = 0, UserId = 1, GrandTotal = _totalValueOfCart, OrderDate = DateTime.Now, OrderStatus = "Pending" };
+		OrderDto orderDto = new OrderDto { Id = 0, UserId = _loginState.UserDto.Id, GrandTotal = _totalValueOfCart, OrderDate = DateTime.Now, OrderStatus = "Pending" };
 		var result = await _orderApiService.CreateOrderAsync(orderDto);
 		
 		if (result is not null)
