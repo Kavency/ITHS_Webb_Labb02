@@ -21,6 +21,16 @@ namespace KayakCove.Web.ApiServices
 
 
         /// <summary>
+        /// Calls the API GetAllOrderDetailsForASpecificOrder.
+        /// </summary>
+        /// <returns>A list of OrderDetailsDtos for a specific order.</returns>
+        public async Task<IEnumerable<OrderDetailsDto>> GetAllOrderDetailsForASpecificOrderAsync(int id)
+        {
+            return await _httpClient.GetFromJsonAsync<List<OrderDetailsDto>>($"orderdetails/{id}/allspecificorders");
+        }
+
+
+        /// <summary>
         /// Calls the API GetOrderDetailsById.
         /// </summary>
         /// <param name="id">Integer representing the id.</param>

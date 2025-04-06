@@ -24,6 +24,19 @@ namespace KayakCove.Api.Controllers
 
 
         /// <summary>
+        /// Get all OrderDetails from database.
+        /// </summary>
+        /// <param name="id">Integer representing the id.</param>
+        /// <returns>200 Ok with a list of OrderDetailsDtos if successful otherwise a 404 Not Found.</returns>
+        [HttpGet("{id}/allspecificorders")]
+        public async Task<IActionResult> GetAllOrderDetailsForASpecificOrder(int id)
+        {
+            var result = await _orderDetailsService.GetAllOrderDetailsForASpecificOrderAsync(id);
+            return result == null ? NotFound() : Ok(result);
+        }
+
+
+        /// <summary>
         /// Get an OrderDetails using id.
         /// </summary>
         /// <param name="id">Integer representing the id.</param>
