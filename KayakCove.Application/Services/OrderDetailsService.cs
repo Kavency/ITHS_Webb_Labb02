@@ -1,6 +1,7 @@
 ﻿using KayakCove.Application.DTOs;
 using KayakCove.Domain.Entities;
 using KayakCove.Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace KayakCove.Application.Services;
 
@@ -16,6 +17,18 @@ public class OrderDetailsService(IOrderDetailsRepository orderDetailsRepository)
     public async Task<IEnumerable<OrderDetailsDto>> GetAllOrderDetailsAsync()
     {
         var orderDetails = await _orderDetailsRepository.GetAllOrderDetailsAsync();
+        return EntityAndDtoConvertion(orderDetails) as IEnumerable<OrderDetailsDto>;
+    }
+
+
+    /// <summary>
+    /// Fetch all order details with specific OrderId.
+    /// </summary>
+    /// <param name="id">Integer representing the Id of a specific order.</param>
+    /// <returns>List of OrderDetails for a specific order.</returns>
+    public async Task<IEnumerable<OrderDetailsDto>> GetAllOrderDetailsForASpecificOrderAsync(int orderId)
+    {
+        var orderDetails = await _orderDetailsRepository.GetAllOrderDetailsForASpecificOrderAsync(orderId);
         return EntityAndDtoConvertion(orderDetails) as IEnumerable<OrderDetailsDto>;
     }
 

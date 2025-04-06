@@ -1,0 +1,126 @@
+﻿@page "/orderdetails/{id:int}"
+@rendermode InteractiveServer
+@using KayakCove.Application.DTOs
+@using KayakCove.Application.Services
+@using KayakCove.Web.ApiServices
+@inject OrderDetailsApiService _orderDetailsApiService
+@inject OrderApiService _orderApiService
+@inject UserApiService _userApiService
+@inject ProductApiService _productApiService
+@inject NavigationManager _navigation
+@inject LoginStateService _loginState
+@inject IJSRuntime _js
+
+<PageTitle>Order Details Page</PageTitle>
+
+@if (!_loginState.IsAdminLoggedIn)
+{
+    <div class="container">
+        <div class="card text-black text-center m-5 shadow">
+            <div class="card-header text-light bg-danger p-3">
+                <h1>Unautorized!</h1>
+            </div>
+            <div class="card-body p-5">
+                <h5>Please <a href="login">login</a> as an admin to view this page!</h5>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @if (_isLoading)
+    {
+        <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+            <img src="images/loading.gif" alt="Loading data" />
+        </div>
+    }
+    else
+    {
+        <div class="container">
+            <div class="card shadow border-0 mt-4">
+                <div class="card-header bg-black bg-gradient ml-0 py-3">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h2 class="text-white py-2">Order Details</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>User Id</th>
+                                <th>Username</th>
+                                <th>Firstname</th>
+                                <th>Lastname</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>@_orderDto.UserId</td>
+                                <td>@_userDto.Username</td>
+                                <td>@_userDto.Firstname</td>
+                                <td>@_userDto.Lastname</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-body p-4">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>OrderId</th>
+                                <th>Product Id</th>
+                                <th>Product Name</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in OrderDetail)
+                            {
+                                <tr>
+                                    <td>@item.OrderId</td>
+                                    <td>@item.ProductId</td>
+                                    <td>@GetProductName(item.ProductId)</td>
+                                    <td>@item.UnitPrice</td>
+                                    <td>@item.Quantity</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    private bool _isLoading { get; set; } = true;
+    private OrderDto _orderDto { get; set; }
+    private UserDto _userDto { get; set; }
+    private ProductDto _productDto { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
+    public IEnumerable<OrderDetailsDto> OrderDetail;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _orderDto = await _orderApiService.GetOrderByIdAsync(Id);
+        OrderDetail = await _orderDetailsApiService.GetAllOrderDetailsForASpecificOrderAsync(Id);
+        _userDto = await _userApiService.GetUserByIdAsync(_orderDto.UserId);
+        _isLoading = false;
+    }
+
+    public async Task<string> GetProductName(int id)
+    {
+        ProductDto product = await _productApiService.GetProductByIdAsync(id);
+        return product.Name;
+    }
+}

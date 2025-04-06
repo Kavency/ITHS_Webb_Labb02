@@ -1,0 +1,126 @@
+﻿@page "/orders"
+@rendermode InteractiveServer
+@using KayakCove.Application.DTOs
+@using KayakCove.Application.Services
+@using KayakCove.Web.ApiServices
+@using KayakCove.Web.Components.Shared
+@inject OrderApiService _orderApiService
+@inject NavigationManager _navigation
+@inject LoginStateService _loginState
+@inject IJSRuntime _js
+
+<PageTitle>Order Page</PageTitle>
+<ConfirmModal OnConfirmClicked="OnDeleteConfirmClicked"></ConfirmModal>
+
+@if (!_loginState.IsAdminLoggedIn)
+{
+    <div class="container">
+        <div class="card text-black text-center m-5 shadow">
+            <div class="card-header text-light bg-danger p-3">
+                <h1>Unautorized!</h1>
+            </div>
+            <div class="card-body p-5">
+                <h5>Please <a href="login">login</a> as an admin to view this page!</h5>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @if (_isLoading)
+    {
+        <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+            <img src="images/loading.gif" alt="Loading data" />
+        </div>
+    }
+    else
+    {
+        <div class="container">
+            <div class="card shadow border-0 mt-4">
+                <div class="card-header bg-black bg-gradient ml-0 py-3">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h2 class="text-white py-2">Orders</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>User Id</th>
+                                <th>Grand Total</th>
+                                <th>Order Date</th>
+                                <th>Order Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Orders)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.UserId</td>
+                                    <td>@item.GrandTotal</td>
+                                    <td>@item.OrderDate</td>
+                                    <td>@item.OrderStatus</td>
+                                    <td>
+                                        <button class="btn btn-primary m-1 py-1 px-2 " @onclick="() => NavigateToOrderDetailsPage(item.Id)"><i class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-danger m-1 py-1 px-2" @onclick="() => OnDeleteClick(item.Id)"><i class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    private bool _isLoading { get; set; } = true;
+    private int _deleteOrderId { get; set; }
+    public IEnumerable<OrderDto> Orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Orders = await _orderApiService.GetAllOrdersAsync();
+        _isLoading = false;
+    }
+
+
+    private void NavigateToOrderDetailsPage(int id)
+    {
+        _navigation.NavigateTo($"/orderdetails/{id}");
+    }
+
+    private void OnDeleteClick(int id)
+    {
+        _deleteOrderId = id;
+        _js.InvokeVoidAsync("showConfirmModal");
+    }
+
+    private async Task OnDeleteConfirmClicked(bool isConfirmed)
+    {
+        _isLoading = true;
+        await _js.InvokeVoidAsync("hideConfirmModal");
+        if (isConfirmed && _deleteOrderId != 0)
+        {
+            var isDeleted = await _orderApiService.DeleteOrderAsync(_deleteOrderId);
+            if (isDeleted)
+            {
+                await _js.ToastrSuccess("Product deleted");
+            }
+            else
+                await _js?.ToastrError("Something went wrong.");
+
+            Orders = await _orderApiService.GetAllOrdersAsync();
+        }
+        _deleteOrderId = 0;
+        _isLoading = false;
+    }
+}

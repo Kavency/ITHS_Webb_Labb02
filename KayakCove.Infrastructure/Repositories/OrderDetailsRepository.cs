@@ -16,7 +16,18 @@ public class OrderDetailsRepository(ApplicationDbContext context) : IOrderDetail
     /// <returns>List of OrderDetails</returns>
     public async Task<IEnumerable<OrderDetails>> GetAllOrderDetailsAsync()
     {
-        return await _context.OrderDetails.ToListAsync();
+        return await _context.OrderDetails.Include(p => p.Product).ToListAsync();
+    }
+
+
+    /// <summary>
+    /// Fetch all order details with specific OrderId.
+    /// </summary>
+    /// <param name="id">Integer representing the Id of a specific order.</param>
+    /// <returns>List of OrderDetails for a specific order.</returns>
+    public async Task<IEnumerable<OrderDetails>> GetAllOrderDetailsForASpecificOrderAsync(int orderId)
+    {
+        return await _context.OrderDetails.Where(o => o.OrderId == orderId).Include(p => p.Product).ToListAsync();
     }
 
 

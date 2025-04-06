@@ -1,18 +1,21 @@
 ﻿@page "/user/register"
+@page "/user/update/{id:int}"
 @rendermode InteractiveServer
 @using KayakCove.Application.DTOs
+@using KayakCove.Application.Services
 @using KayakCove.Web.ApiServices
 @using KayakCove.Domain.Entities
 @inject RoleApiService _roleApiService
 @inject UserApiService _userApiService
 @inject NavigationManager _navigationManager
+@inject IJSRuntime _js
 
 <div class="container">
     <div class="card shadow border-0 mt-4">
         <div class="card-header bg-black bg-gradient ml-0 py-3">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h2 class="text-white py-2">Register account</h2>
+                    <h2 class="text-white py-2">@(Id > 0 ? "Update" : "Register") account</h2>
                 </div>
             </div>
         </div>
@@ -26,11 +29,14 @@
                         <label for="Username">*Username</label>
                         <ValidationMessage For="@(() => UserDto.Username)" />
                     </div>
-                    <div class="form-floating py-3 col-12">
-                        <InputText type="password" class="form-control" @bind-Value="@UserDto.Password" id="Password" placeholder="Password" />
-                        <label for="Password">*Password</label>
-                        <ValidationMessage For="@(() => UserDto.Password)" />
-                    </div>
+                    @if (Id == 0)
+                    {
+                        <div class="form-floating py-3 col-12">
+                            <InputText type="password" class="form-control" @bind-Value="@UserDto.Password" id="Password" placeholder="Password" />
+                            <label for="Password">*Password</label>
+                            <ValidationMessage For="@(() => UserDto.Password)" />
+                        </div>
+                    }
                     <div class="form-floating py-3 col-12">
                         <InputText class="form-control" @bind-Value="@UserDto.Firstname" id="Firstname" placeholder="Firstname" />
                         <label for="Firstname">*Firstname</label>
@@ -82,7 +88,7 @@
 
                     <div class="form-group py-2">
                         <button type="submit" class="btn btn-success m-3" disabled="@_isLoading">
-                            <i class="bi bi-floppy"></i> Create Account
+                            <i class="bi bi-floppy"></i> @(Id > 0 ? "Update" : "Register") Account
                         </button>
                         <button @onclick="OnAddUserCancel" class="btn btn-danger m-3" disabled="@_isLoading">
                             <i class="bi bi-x-circle"></i> Cancel
@@ -96,7 +102,10 @@
 
 @code {
     private bool _isLoading { get; set; } = true;
+    private UserDto UserFallback { get; set; } = new UserDto();
 
+    [Parameter]
+    public int Id { get; set; }
     public UserDto UserDto { get; set; } = new UserDto() 
     {
         Phonenumber = string.Empty,
@@ -112,18 +121,70 @@
     {
         Roles = await _roleApiService.GetAllRolesAsync();
 
+        if(Id > 0)
+        {
+            UserDto = await _userApiService.GetUserByIdAsync(Id);
+
+            UserFallback.Id = Id;
+            UserFallback.Username = UserDto.Username;
+            UserFallback.Password = UserDto.Password;
+            UserFallback.Firstname = UserDto.Firstname;
+            UserFallback.Lastname = UserDto.Lastname;
+            UserFallback.Email = UserDto.Email;
+            UserFallback.Streetaddress = UserDto.Streetaddress;
+            UserFallback.Postalcode = UserDto.Postalcode;
+            UserFallback.City = UserDto.City;
+            UserFallback.Country = UserDto.Country;
+            UserFallback.Phonenumber = UserDto.Phonenumber;
+            UserFallback.RoleId = UserDto.RoleId;
+            UserFallback.Role = UserDto.Role;
+        }
+
         _isLoading = false;
     }
 
-    private void AddUserSubmit()
+    private async Task AddUserSubmit()
     {
-        _userApiService.CreateUserAsync(UserDto);
+        _isLoading = true;
+
+        if(Id == 0)
+        {
+            await _userApiService.CreateUserAsync(UserDto);
+            _navigationManager.NavigateTo("/user");
+        }
+        else
+        {
+            UserDto.Role = new Role() { Id = 0, Title = string.Empty };
+
+            var result = await _userApiService.UpdateUserAsync(Id, UserDto);
+
+            if (result)
+                await _js.ToastrSuccess("Product updated!");
+            else
+                await _js.ToastrError("Something went wrong!");
+        }
+
+
+        _isLoading = false;
+
         _navigationManager.NavigateTo("/user");
     }
 
     private void OnAddUserCancel()
     {
-        UserDto = new UserDto() { Role = new Role { Id = 0, Title = string.Empty } };
+        UserDto.Id = UserFallback.Id;
+        UserDto.Username = UserFallback.Username;
+        UserDto.Password = UserFallback.Password;
+        UserDto.Firstname = UserFallback.Firstname;
+        UserDto.Lastname = UserFallback.Lastname;
+        UserDto.Email = UserFallback.Email;
+        UserDto.Streetaddress = UserFallback.Streetaddress;
+        UserDto.Postalcode = UserFallback.Postalcode;
+        UserDto.City = UserFallback.City;
+        UserDto.Country = UserFallback.Country;
+        UserDto.Phonenumber = UserFallback.Phonenumber;
+        UserDto.RoleId = UserFallback.RoleId;
+        UserDto.Role = UserFallback.Role;
 
         _navigationManager.NavigateTo("/user");
     }
