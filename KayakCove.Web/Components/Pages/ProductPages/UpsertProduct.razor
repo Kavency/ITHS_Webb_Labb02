@@ -95,7 +95,6 @@
 
     [SupplyParameterFromForm]
     public ProductDto ProductDto { get; set; } = new ProductDto() { Category = new Category() { Id = 0, Name = string.Empty } };
-
     public ProductDto ProductFallback { get; set; } = new ProductDto();
     public IEnumerable<CategoryDto> Categories = new List<CategoryDto>();
 
@@ -142,9 +141,9 @@
             var result = await _productApiService.UpdateProductAsync(Id, ProductDto);
 
             if (result)
-                _js.ToastrSuccess("Product updated!");
+                await _js.ToastrSuccess("Product updated!");
             else
-                _js.ToastrError("Something went wrong!");
+                await _js.ToastrError("Something went wrong!");
         }
 
         _isLoading = false;

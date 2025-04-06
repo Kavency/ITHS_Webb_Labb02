@@ -128,7 +128,8 @@ public class UserService
             City = dto.City,
             Country = dto.Country,
             Phonenumber = dto.Phonenumber,
-            RoleId = dto.RoleId
+            RoleId = dto.RoleId,
+            Role = dto.Role
         };
     }
 }
