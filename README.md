@@ -2,11 +2,11 @@
 ### An online store for a fictional kayak retailer.
 
 #### Admin login:
-Username: kalle 
+Username: kalle </br>
 Password: admin
 
 #### User login:
-Username: mimmi 
+Username: mimmi </br>
 Password: mimmi
 
 ## [API Specification](Api_Specification.md)
