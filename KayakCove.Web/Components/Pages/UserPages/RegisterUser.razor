@@ -8,6 +8,7 @@
 @inject RoleApiService _roleApiService
 @inject UserApiService _userApiService
 @inject NavigationManager _navigationManager
+@inject LoginStateService _loginState
 @inject IJSRuntime _js
 
 <div class="container">
@@ -149,8 +150,13 @@
 
         if(Id == 0)
         {
-            await _userApiService.CreateUserAsync(UserDto);
-            _navigationManager.NavigateTo("/user");
+            UserDto.Role = new Role() { Id = 0, Title = string.Empty };
+            var result = await _userApiService.CreateUserAsync(UserDto);
+
+            if (result is not null)
+                await _js.ToastrSuccess("User created!");
+            else
+                await _js.ToastrError("Something went wrong!");
         }
         else
         {
@@ -159,7 +165,7 @@
             var result = await _userApiService.UpdateUserAsync(Id, UserDto);
 
             if (result)
-                await _js.ToastrSuccess("Product updated!");
+                await _js.ToastrSuccess("User updated!");
             else
                 await _js.ToastrError("Something went wrong!");
         }
@@ -167,7 +173,14 @@
 
         _isLoading = false;
 
-        _navigationManager.NavigateTo("/user");
+        if (_loginState.IsAdminLoggedIn)
+        {
+            _navigationManager.NavigateTo("/user");
+        }
+        else
+        {
+            _navigationManager.NavigateTo("/login");
+        }
     }
 
     private void OnAddUserCancel()
