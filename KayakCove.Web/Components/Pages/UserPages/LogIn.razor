@@ -88,21 +88,23 @@
 
             var role = await _authService.GetRoleAsync();
 
-            if (role == "Admin")
-            {
-                _loginState.UpdateAdminLoginState(true);
-            }
-            else
-            {
-                _loginState.UpdateUserLoginState(true);
-            }
 
             _loginState.SetUser(tokenResponseDto.UserDto);
 
             StateHasChanged();
             _isLoading = false;
             _toastService.ShowSuccess("Login successful");
-            _navigationManager.NavigateTo("..");
+            
+            if (role == "Admin")
+            {
+                _loginState.UpdateAdminLoginState(true);
+                _navigationManager.NavigateTo("products");
+            }
+            else
+            {
+                _loginState.UpdateUserLoginState(true);
+                _navigationManager.NavigateTo("..");
+            }
         }
 
         _isLoading = false;
