@@ -30,7 +30,8 @@ public class UserService
             City = u.City,
             Country = u.Country,
             Phonenumber = u.Phonenumber,
-            RoleId = u.RoleId
+            RoleId = u.RoleId,
+            Role = u.Role
         });
 
         return userDtos;
@@ -128,8 +129,7 @@ public class UserService
             City = dto.City,
             Country = dto.Country,
             Phonenumber = dto.Phonenumber,
-            RoleId = dto.RoleId,
-            Role = dto.Role
+            RoleId = dto.RoleId
         };
     }
 }
