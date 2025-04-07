@@ -7,6 +7,7 @@
 @inject OrderApiService _orderApiService
 @inject OrderDetailsApiService _orderDetailsApiService
 @inject LoginStateService _loginState
+@inject NavigationManager _navigation
 
 <PageTitle>Shopping Cart</PageTitle>
 
@@ -191,7 +192,7 @@ else
 	{
 		OrderDto orderDto = new OrderDto { Id = 0, UserId = _loginState.UserDto.Id, GrandTotal = _totalValueOfCart, OrderDate = DateTime.Now, OrderStatus = "Pending" };
 		var result = await _orderApiService.CreateOrderAsync(orderDto);
-		
+
 		if (result is not null)
 		{
 			foreach(var item in CartItems)
@@ -207,11 +208,12 @@ else
 
 				await _orderDetailsApiService.CreateOrderDetailsAsync(orderDetailsDto);
 			}
-			
+
 			CartItems.Clear();
 			await CalculateSumsInCart();
 			await UpdateLocalStorage();
-			StateHasChanged();
+
+			_navigation.NavigateTo("confirmation");
 		}
 	}
 }
